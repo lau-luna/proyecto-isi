@@ -90,6 +90,7 @@ class Respuesta {
 }
 
 class Voto {
+  - fecha : DateTime
   - valor : int
 }
 
