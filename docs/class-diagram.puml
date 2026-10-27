@@ -20,7 +20,7 @@ abstract class Usuario {
   # passwordHash : String
   # nombreVisible : String
   + getNombreVisible() : String
-  + publicarPregunta(titulo, cuerpo, cat) : Pregunta
+  + publicarPregunta(titulo : String, cuerpo : String, cat : Categoria, etiquetas : Etiqueta[*]) : Pregunta
 }
 
 class UsuarioGeneral
@@ -52,20 +52,18 @@ abstract class FabricaAutor {
 }
 
 class FabricaAutorHumano {
-  - usuario : Usuario
   + crearAutor() : Usuario
 }
 
 class FabricaAgenteIA {
-  - agente : AgenteIA
   + crearAutor() : AgenteIA
 }
 
 FabricaAutor <|-- FabricaAutorHumano
 FabricaAutor <|-- FabricaAgenteIA
 
-FabricaAutorHumano .down.> Usuario : <<create>>
-FabricaAgenteIA .down.> AgenteIA : <<create>>
+FabricaAutorHumano "0..*" -down-> "1" Usuario : usuario
+FabricaAgenteIA "0..*" -down-> "1" AgenteIA : agente
 
 ' =========================================================
 ' 3. CONTENIDO DEL DOMINIO
@@ -105,14 +103,14 @@ class Etiqueta {
 Publicacion <|-- Pregunta
 Publicacion <|-- Respuesta
 
-Pregunta "1" *-right- "*" Respuesta : respuestas
-Respuesta "*" -down-> "1" Autor : autor
-Pregunta "*" -up-> "1" Categoria : categoria
-Pregunta "*" -up-> "*" Etiqueta : etiquetas
-Pregunta "*" -down-> "1" Usuario : autor
+Pregunta "1" *-right- "0..*" Respuesta : respuestas
+Respuesta "0..*" -down-> "1" Autor : autor
+Pregunta "0..*" -up-> "1" Categoria : categoria
+Pregunta "0..*" -up-> "0..*" Etiqueta : etiquetas
+Pregunta "0..*" -down-> "1" Usuario : autor
 
-Publicacion "1" *-right- "*" Voto : votos
-Voto "*" -down-> "1" Usuario : votante
+Publicacion "1" *-right- "0..*" Voto : votos
+Voto "0..*" -down-> "1" Usuario : votante
 
 Pregunta ..> FabricaAutor : <<use>>
 
@@ -149,9 +147,9 @@ class ServicioRespuestasAutomaticas {
   + responder(p : Pregunta) : Respuesta
 }
 
-ServicioRespuestasAutomaticas o-up-> "1" EstrategiaLLM : estrategia
-ServicioRespuestasAutomaticas -right-> "1" Etiqueta : etiquetaActivadora
-ServicioRespuestasAutomaticas -down-> "1" FabricaAgenteIA : fabrica
+ServicioRespuestasAutomaticas "1" o-up-> "1" EstrategiaLLM : estrategia
+ServicioRespuestasAutomaticas "0..*" -right-> "1" Etiqueta : etiquetaActivadora
+ServicioRespuestasAutomaticas "0..*" -down-> "1" FabricaAgenteIA : fabrica
 ServicioRespuestasAutomaticas ..> Pregunta : evalua
 
 ' ---- layout (links ocultos) ----
@@ -170,7 +168,7 @@ Respuesta -[hidden]right- Voto
 ' =========================================================
 legend bottom
   |= Elemento |= Decisiones de diseño y reglas de negocio |
-  | **Pregunta** | Solo un Usuario humano puede crear una Pregunta.\nSolo el autor de la Pregunta puede aceptar respuestas (aceptarRespuesta recibe al solicitante).\nPertenece a una Categoría y tiene 0..* Etiquetas.\nagregarRespuesta() recibe una FabricaAutor, obtiene el Autor con crearAutor() y crea la Respuesta;\nPregunta no conoce si el autor es humano o IA. |
+  | **Pregunta** | Solo un Usuario humano puede crear una Pregunta.\nSolo el autor de la Pregunta puede aceptar respuestas (aceptarRespuesta recibe al solicitante).\nPuede haber varias respuestas aceptadas.\nPertenece a una Categoría y tiene 0..* Etiquetas.\nagregarRespuesta() recibe una FabricaAutor, obtiene el Autor con crearAutor() y crea la Respuesta;\nPregunta no conoce si el autor es humano o IA. |
   | **Respuesta** | Solo conoce la interfaz Autor: es agnóstica a si la escribió un humano o un AgenteIA. |
   | **Publicacion / Voto** | Solo un Usuario registrado puede emitir votos.\nVoto es una clase aparte: un Usuario puede emitir un solo Voto por Publicacion.\npuntuacion es derivada (suma de los valores de los Voto, +1 / -1). |
   | **Respuesta automática** | 1. Evalúa si la Pregunta tiene la Etiqueta activadora ("ia-help") o si expiró el tiempo sin respuestas.\n2. Usa EstrategiaLLM.generar(prompt) para obtener el texto.\n3. Invoca Pregunta.agregarRespuesta(texto, fabricaAgenteIA).\nEl AgenteIA está previamente registrado: la FabricaAgenteIA lo entrega, no se crea uno nuevo por cada respuesta.\nLa estrategia es intercambiable y permanece desacoplada del dominio. |
