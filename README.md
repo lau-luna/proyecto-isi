@@ -13,6 +13,7 @@ La documentación del proyecto se encuentra en la carpeta [docs](docs/).
 
 ### Diagrama de Clases
 [Diagrama](docs/class-diagram.puml)
+[Justifiacion Patrones](docs/justificacion-patrones.md))
 ![Class Diagram](docs/class-diagram.png)
 
 ## Librerias
