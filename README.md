@@ -9,7 +9,7 @@ UNRC 2026.
 
 Nota de @lau-luna: 
 agregué una nueva línea después de Juan Pablo Ollo y en el blame aparece que modifiqué esa linea yo,
-pero Juan Ollo añadió su nombre en el commit f986ef2
+pero Juan Ollo añadió su nombre en el commit [f986ef2](https://github.com/lau-luna/proyecto-isi/commit/f986ef25c593fb157e2b25b434900e6e7525a44c)
 
 ## Documentación
 La documentación del proyecto se encuentra en la carpeta [docs](docs/).
