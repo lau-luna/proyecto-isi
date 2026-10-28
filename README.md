@@ -7,13 +7,17 @@ UNRC 2026.
 - Hugo Rodrigo Saavedra Diaz
 - Juan Pablo Ollo
 
+Nota de @lau-luna: 
+agregué una nueva línea después de Juan Pablo Ollo y en el blame aparece que modifiqué esa linea yo,
+pero Juan Ollo añadió su nombre en el commit f986ef2
 
 ## Documentación
 La documentación del proyecto se encuentra en la carpeta [docs](docs/).
 
 ### Diagrama de Clases
 [Diagrama](docs/class-diagram.puml)
-[Justifiacion Patrones](docs/justificacion-patrones.md))
+
+[Justificación Patrones](docs/justificacion-patrones.md)
 ![Class Diagram](docs/class-diagram.png)
 
 ## Librerias
