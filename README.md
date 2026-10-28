@@ -15,10 +15,10 @@ pero Juan Ollo añadió su nombre en el commit [f986ef2](https://github.com/lau-
 La documentación del proyecto se encuentra en la carpeta [docs](docs/).
 
 ### Diagrama de Clases
-[Diagrama](docs/class-diagram.puml)
+[Diagrama](docs/class-diagram.drawio)
 
 [Justificación Patrones](docs/justificacion-patrones.md)
-![Class Diagram](docs/class-diagram.png)
+![Class Diagram](docs/class-diagram-drawio.png)
 
 ## Librerias
 - Jinja2
