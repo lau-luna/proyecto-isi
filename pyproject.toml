@@ -1,7 +1,7 @@
 [project]
 name = "proyecto"
 version = "0.1.0"
-description = "Add your description here"
+description = "Q&A website"
 readme = "README.md"
 authors = [
     { name = "Lautaro Luna", email = "lautaroluna906@gmail.com" }
@@ -28,3 +28,9 @@ dev = [
     "pytest>=9.1.1",
     "ruff>=0.17.1",
 ]
+
+[tool.ruff]
+extend-exclude = ["migrations/versions"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
