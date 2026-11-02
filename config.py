@@ -10,7 +10,7 @@ class Config:
 
 
 class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = "postgresql://user@localhost/foo"
+    DATABASE_URL = "postgresql://user@localhost/foo"
 
 
 class DevelopmentConfig(Config):
@@ -18,11 +18,11 @@ class DevelopmentConfig(Config):
     DEBUG = True
     ENV = "development"
     SECRET_KEY = os.environ.get("SECRET_KEY")
-    SQLALCHEMY_DATABASE_URI = "sqlite:////tmp/foo.db"
+    DATABASE_URL = "sqlite:////tmp/foo.db"
 
 
 class TestingConfig(Config):
-    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
+    DATABASE_URL = "sqlite:///:memory:"
     TESTING = True
     SECRET_KEY = "TEST"
 
