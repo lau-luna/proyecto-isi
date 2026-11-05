@@ -11,4 +11,3 @@ class Category(Base):
 
     def __repr__(self) -> str:
         return f"Category(id={self.id!r}, name={self.name!r})"
-

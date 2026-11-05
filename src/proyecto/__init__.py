@@ -3,7 +3,7 @@ import os
 from flask import Flask, render_template
 from sqlalchemy.orm import sessionmaker
 
-from config import config
+from proyecto.config import config
 from proyecto.extensions import Base, create_db_engine
 
 from . import models  # noqa: F401  (registra los modelos en Base.metadata)

@@ -3,6 +3,7 @@ from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import DeclarativeBase, Session
 from sqlalchemy.pool import StaticPool
 
+# Importante usar StaticPool para sqlite en memoria, hace que todas las sesiones compartan la misma base de datos, sino se crearía una base de datos diferente por cada test.
 
 class Base(DeclarativeBase):
     """Base declarativa de la que heredan todos los modelos."""
