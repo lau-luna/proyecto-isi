@@ -1,5 +1,5 @@
-@startuml diagrama_qa
-title Modelo Conceptual - Plataforma Q&A
+@startuml qa_diagram
+title Conceptual Model - Q&A Platform
 
 skinparam classAttributeIconSize 0
 skinparam shadowing false
@@ -9,169 +9,169 @@ skinparam ranksep 90
 hide empty members
 
 ' =========================================================
-' 1. AUTORIA Y USUARIOS
+' 1. AUTHORSHIP AND USERS
 ' =========================================================
-interface Autor {
-  + getNombreVisible() : String
+interface Author {
+  + getDisplayName() : String
 }
 
-abstract class Usuario {
+abstract class User {
   # email : String
   # passwordHash : String
-  # nombreVisible : String
-  + getNombreVisible() : String
-  + publicarPregunta(titulo : String, cuerpo : String, cat : Categoria, etiquetas : Etiqueta[*]) : Pregunta
+  # displayName : String
+  + getDisplayName() : String
+  + postQuestion(title : String, body : String, category : Category, tags : Tag[*]) : Question
 }
 
-class UsuarioGeneral
+class RegularUser
 
-class Moderador {
-  + eliminarPublicacion(p : Publicacion) : void
+class Moderator {
+  + deletePost(p : Post) : void
 }
 
-class Administrador {
-  + gestionarUsuarios() : void
+class Administrator {
+  + manageUsers() : void
 }
 
-class AgenteIA {
-  - nombreVisible : String
-  + getNombreVisible() : String
+class AIAgent {
+  - displayName : String
+  + getDisplayName() : String
 }
 
-Autor <|.. Usuario
-Autor <|.. AgenteIA
-Usuario <|-- UsuarioGeneral
-Usuario <|-- Moderador
-Moderador <|-- Administrador
+Author <|.. User
+Author <|.. AIAgent
+User <|-- RegularUser
+User <|-- Moderator
+Moderator <|-- Administrator
 
 ' =========================================================
-' 2. FACTORY METHOD DE AUTORIA
+' 2. AUTHORSHIP FACTORY METHOD
 ' =========================================================
-abstract class FabricaAutor {
-  + {abstract} crearAutor() : Autor
+abstract class AuthorFactory {
+  + {abstract} createAuthor() : Author
 }
 
-class FabricaAutorHumano {
-  + crearAutor() : Usuario
+class HumanAuthorFactory {
+  + createAuthor() : User
 }
 
-class FabricaAgenteIA {
-  + crearAutor() : AgenteIA
+class AIAgentFactory {
+  + createAuthor() : AIAgent
 }
 
-FabricaAutor <|-- FabricaAutorHumano
-FabricaAutor <|-- FabricaAgenteIA
+AuthorFactory <|-- HumanAuthorFactory
+AuthorFactory <|-- AIAgentFactory
 
-FabricaAutorHumano "0..*" -down-> "1" Usuario : usuario
-FabricaAgenteIA "0..*" -down-> "1" AgenteIA : agente
-
-' =========================================================
-' 3. CONTENIDO DEL DOMINIO
-' =========================================================
-abstract class Publicacion {
-  # cuerpo : String
-  # fechaPublicacion : DateTime
-  + /puntuacion : int
-  + votarPositivo(votante : Usuario) : void
-  + votarNegativo(votante : Usuario) : void
-}
-
-class Pregunta {
-  - titulo : String
-  + agregarRespuesta(cuerpo : String, fabrica : FabricaAutor) : Respuesta
-  + aceptarRespuesta(r : Respuesta, solicitante : Usuario) : void
-}
-
-class Respuesta {
-  - aceptada : boolean
-  + marcarComoAceptada() : void
-}
-
-class Voto {
-  - fecha : DateTime
-  - valor : int
-}
-
-class Categoria {
-  - nombre : String
-}
-
-class Etiqueta {
-  - nombre : String
-}
-
-Publicacion <|-- Pregunta
-Publicacion <|-- Respuesta
-
-Pregunta "1" *-right- "0..*" Respuesta : respuestas
-Respuesta "0..*" -down-> "1" Autor : autor
-Pregunta "0..*" -up-> "1" Categoria : categoria
-Pregunta "0..*" -up-> "0..*" Etiqueta : etiquetas
-Pregunta "0..*" -down-> "1" Usuario : autor
-
-Publicacion "1" *-right- "0..*" Voto : votos
-Voto "0..*" -down-> "1" Usuario : votante
-
-Pregunta ..> FabricaAutor : <<use>>
+HumanAuthorFactory "0..*" -down-> "1" User : user
+AIAgentFactory "0..*" -down-> "1" AIAgent : agent
 
 ' =========================================================
-' 4. STRATEGY PARA PROVEEDORES LLM
+' 3. DOMAIN CONTENT
 ' =========================================================
-interface EstrategiaLLM {
-  + generar(prompt : String) : String
+abstract class Post {
+  # body : String
+  # publishedAt : DateTime
+  + /score : int
+  + upvote(voter : User) : void
+  + downvote(voter : User) : void
 }
 
-class EstrategiaOpenAI {
-  - modelo : String
-  + generar(prompt : String) : String
+class Question {
+  - title : String
+  + addAnswer(body : String, factory : AuthorFactory) : Answer
+  + acceptAnswer(r : Answer, requester : User) : void
 }
 
-class EstrategiaGemini {
-  - modelo : String
-  + generar(prompt : String) : String
+class Answer {
+  - accepted : boolean
+  + markAsAccepted() : void
 }
 
-class EstrategiaModeloLocal {
-  - modelo : String
-  + generar(prompt : String) : String
+class Vote {
+  - date : DateTime
+  - value : int
 }
 
-EstrategiaOpenAI .down.|> EstrategiaLLM
-EstrategiaGemini .down.|> EstrategiaLLM
-EstrategiaModeloLocal .down.|> EstrategiaLLM
-
-class ServicioRespuestasAutomaticas {
-  - tiempoMaximoSinRespuesta : Duration
-  + cambiarEstrategia(e : EstrategiaLLM) : void
-  + debeResponder(p : Pregunta) : boolean
-  + responder(p : Pregunta) : Respuesta
+class Category {
+  - name : String
 }
 
-ServicioRespuestasAutomaticas "1" o-up-> "1" EstrategiaLLM : estrategia
-ServicioRespuestasAutomaticas "0..*" -right-> "1" Etiqueta : etiquetaActivadora
-ServicioRespuestasAutomaticas "0..*" -down-> "1" FabricaAgenteIA : fabrica
-ServicioRespuestasAutomaticas ..> Pregunta : evalua
+class Tag {
+  - name : String
+}
 
-' ---- layout (links ocultos) ----
-EstrategiaOpenAI -[hidden]right- EstrategiaGemini
-EstrategiaGemini -[hidden]right- EstrategiaModeloLocal
-Etiqueta -[hidden]right- Categoria
-Categoria -[hidden]right- Publicacion
-FabricaAgenteIA -[hidden]right- FabricaAutorHumano
-AgenteIA -[hidden]right- Usuario
-FabricaAgenteIA -[hidden]down- AgenteIA
-Respuesta -[hidden]right- Voto
+Post <|-- Question
+Post <|-- Answer
+
+Question "1" *-right- "0..*" Answer : answers
+Answer "0..*" -down-> "1" Author : author
+Question "0..*" -up-> "1" Category : category
+Question "0..*" -up-> "0..*" Tag : tags
+Question "0..*" -down-> "1" User : author
+
+Post "1" *-right- "0..*" Vote : votes
+Vote "0..*" -down-> "1" User : voter
+
+Question ..> AuthorFactory : <<use>>
+
+' =========================================================
+' 4. STRATEGY FOR LLM PROVIDERS
+' =========================================================
+interface LLMStrategy {
+  + generate(prompt : String) : String
+}
+
+class OpenAIStrategy {
+  - model : String
+  + generate(prompt : String) : String
+}
+
+class GeminiStrategy {
+  - model : String
+  + generate(prompt : String) : String
+}
+
+class LocalModelStrategy {
+  - model : String
+  + generate(prompt : String) : String
+}
+
+OpenAIStrategy .down.|> LLMStrategy
+GeminiStrategy .down.|> LLMStrategy
+LocalModelStrategy .down.|> LLMStrategy
+
+class AutoAnswerService {
+  - maxTimeWithoutAnswer : Duration
+  + setStrategy(e : LLMStrategy) : void
+  + shouldAnswer(p : Question) : boolean
+  + answer(p : Question) : Answer
+}
+
+AutoAnswerService "1" o-up-> "1" LLMStrategy : strategy
+AutoAnswerService "0..*" -right-> "1" Tag : triggerTag
+AutoAnswerService "0..*" -down-> "1" AIAgentFactory : factory
+AutoAnswerService ..> Question : evaluates
+
+' ---- layout (hidden links) ----
+OpenAIStrategy -[hidden]right- GeminiStrategy
+GeminiStrategy -[hidden]right- LocalModelStrategy
+Tag -[hidden]right- Category
+Category -[hidden]right- Post
+AIAgentFactory -[hidden]right- HumanAuthorFactory
+AIAgent -[hidden]right- User
+AIAgentFactory -[hidden]down- AIAgent
+Answer -[hidden]right- Vote
 
 
 ' =========================================================
-' NOTAS (en leyenda para no interferir con el layout)
+' NOTES (in a legend so they do not interfere with the layout)
 ' =========================================================
 legend bottom
-  |= Elemento |= Decisiones de diseño y reglas de negocio |
-  | **Pregunta** | Solo un Usuario humano puede crear una Pregunta.\nSolo el autor de la Pregunta puede aceptar respuestas (aceptarRespuesta recibe al solicitante).\nPuede haber varias respuestas aceptadas.\nPertenece a una Categoría y tiene 0..* Etiquetas.\nagregarRespuesta() recibe una FabricaAutor, obtiene el Autor con crearAutor() y crea la Respuesta;\nPregunta no conoce si el autor es humano o IA. |
-  | **Respuesta** | Solo conoce la interfaz Autor: es agnóstica a si la escribió un humano o un AgenteIA. |
-  | **Publicacion / Voto** | Solo un Usuario registrado puede emitir votos.\nVoto es una clase aparte: un Usuario puede emitir un solo Voto por Publicacion.\npuntuacion es derivada (suma de los valores de los Voto, +1 / -1). |
-  | **Respuesta automática** | 1. Evalúa si la Pregunta tiene la Etiqueta activadora ("ia-help") o si expiró el tiempo sin respuestas.\n2. Usa EstrategiaLLM.generar(prompt) para obtener el texto.\n3. Invoca Pregunta.agregarRespuesta(texto, fabricaAgenteIA).\nEl AgenteIA está previamente registrado: la FabricaAgenteIA lo entrega, no se crea uno nuevo por cada respuesta.\nLa estrategia es intercambiable y permanece desacoplada del dominio. |
+  |= Element |= Design decisions and business rules |
+  | **Question** | Only a human User can create a Question.\nOnly the author of the Question can accept answers (acceptAnswer receives the requester).\nThere can be several accepted answers.\nBelongs to one Category and has 0..* Tags.\naddAnswer() receives an AuthorFactory, gets the Author with createAuthor() and creates the Answer;\nQuestion does not know whether the author is human or AI. |
+  | **Answer** | Only knows the Author interface: it is agnostic to whether a human or an AIAgent wrote it. |
+  | **Post / Vote** | Only a registered User can cast votes.\nVote is a separate class: a User can cast only one Vote per Post.\nscore is derived (sum of the Vote values, +1 / -1). |
+  | **Automatic answer** | 1. Checks whether the Question has the trigger Tag ("ia-help") or the time without answers has expired.\n2. Uses LLMStrategy.generate(prompt) to get the text.\n3. Calls Question.addAnswer(text, aiAgentFactory).\nThe AIAgent is pre-registered: the AIAgentFactory returns it, a new one is not created for each answer.\nThe strategy is interchangeable and stays decoupled from the domain. |
 endlegend
 
 @enduml
