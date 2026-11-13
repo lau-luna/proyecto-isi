@@ -6,6 +6,7 @@ UNRC 2026.
 - Lautaro Eduardo Eber Luna
 - Hugo Rodrigo Saavedra Diaz
 - Juan Pablo Ollo
+- Catalina Gnesutta
 
 Nota de @lau-luna: 
 agregué una nueva línea después de Juan Pablo Ollo y en el blame aparece que modifiqué esa linea yo,
