@@ -1,9 +1,10 @@
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from proyecto.extensions import Base
+from proyecto.extensions import db
 
-class Category(Base):
+
+class Category(db.Model):
     __tablename__ = "category"
 
     id: Mapped[int] = mapped_column(primary_key=True)

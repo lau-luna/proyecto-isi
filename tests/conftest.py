@@ -1,7 +1,7 @@
 import pytest
 
 from proyecto import create_app
-from proyecto.extensions import get_session, Base
+from proyecto.extensions import db
 
 
 @pytest.fixture(scope='session')
@@ -18,15 +18,13 @@ def client(app):
 # Crea las tablas antes de cada test y despues las borra
 @pytest.fixture(scope='function')
 def init_database(app):
-    engine = app.extensions["db_engine"]
-    Base.metadata.create_all(engine)
-    yield
-    Base.metadata.drop_all(engine)
+    with app.app_context():
+        db.create_all()
+        yield
+        db.drop_all()
 
 # Sesion para usar directo en los tests
 @pytest.fixture(scope='function')
 def session(app, init_database):
     with app.app_context():
-        s = get_session()
-        yield s
-
+        yield db.session

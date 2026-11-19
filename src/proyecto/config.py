@@ -3,6 +3,7 @@ import os
 
 class Config:
     TESTING = False
+    SQLALCHEMY_SESSION_OPTIONS = {"expire_on_commit": False}
 
     @staticmethod
     def init_app(app):
@@ -10,7 +11,7 @@ class Config:
 
 
 class ProductionConfig(Config):
-    DATABASE_URL = "postgresql://user@localhost/foo"
+    SQLALCHEMY_DATABASE_URI = "postgresql://user@localhost/foo"
 
 
 class DevelopmentConfig(Config):
@@ -18,11 +19,11 @@ class DevelopmentConfig(Config):
     DEBUG = True
     ENV = "development"
     SECRET_KEY = os.environ.get("SECRET_KEY")
-    DATABASE_URL = "sqlite:////tmp/foo.db"
+    SQLALCHEMY_DATABASE_URI = "sqlite:////tmp/foo.db"
 
 
 class TestingConfig(Config):
-    DATABASE_URL = "sqlite:///:memory:"
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
     TESTING = True
     SECRET_KEY = "TEST"
 

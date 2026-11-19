@@ -1,12 +1,11 @@
 import os
 
 from flask import Flask, render_template
-from sqlalchemy.orm import sessionmaker
 
 from proyecto.config import config
-from proyecto.extensions import Base, create_db_engine
+from proyecto.extensions import db, migrate
 
-from . import models  # noqa: F401  (registra los modelos en Base.metadata)
+from . import models  # noqa: F401  (registra los modelos en db.metadata)
 
 
 def create_app(environment="development"):
@@ -19,23 +18,8 @@ def create_app(environment="development"):
     # configure this app whithin the environment
     app.config.from_object(config[environment])
 
-    # una sola conexión y un solo sessionmaker por aplicación
-    engine = create_db_engine(app.config["DATABASE_URL"])
-    app.extensions["db_engine"] = engine
-    app.extensions["db_session"] = sessionmaker(bind=engine, expire_on_commit=False)
-
-    @app.teardown_appcontext
-    def close_db_session(exc):
-        from flask import g
-
-        session = g.pop("db", None)
-        if session is not None:
-            session.close()
-
-    @app.cli.command("init-db")
-    def init_db_command():
-        """Crea todas las tablas (solo para desarrollo)."""
-        Base.metadata.create_all(engine)
+    db.init_app(app)
+    migrate.init_app(app, db)
 
     @app.route("/")
     @app.route("/<name>")
