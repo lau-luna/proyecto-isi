@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+  </head>
+  <body>
+    <section class="section">
+      <div class="container">
+        <div class="columns is-centered">
+          <div
+            class="column is-12-mobile is-8-tablet is-6-desktop is-5-widescreen"
+          >
+            <div class="box">
+              <h1 class="title is-3 has-text-centered">Register</h1>
+
+              {% set errors = errors|default({}, true) %} {% set values =
+              values|default({}) %}
+              <form action="{{ url_for('user.register') }}" method="post" novalidate>
+                <div class="field">
+                  <label class="label" for="username">Username</label>
+                  <div class="control has-icons-left has-icons-right">
+                    <input
+                      id="username"
+                      class="input {{ 'is-danger' if errors.get('username') else ('is-success' if username_available else '') }}"
+                      type="text"
+                      name="username"
+                      placeholder="coolusername"
+                      autocomplete="username"
+                      required
+                    />
+                    <span class="icon is-small is-left">
+                      <i class="fas fa-user"></i>
+                    </span>
+                    {% if errors.get('username') %}
+                    <span class="icon is-small is-right">
+                      <i class="fas fa-exclamation-triangle"></i>
+                    </span>
+                    {% endif %}
+                  </div>
+                  {% if errors.get('username') %}
+                  <p class="help is-danger">{{ errors['username'] }}</p>
+                  {% endif %}
+                </div>
+
+                <div class="field">
+                  <label class="label" for="email">Email</label>
+                  <div class="control has-icons-left has-icons-right">
+                    <input
+                      id="email"
+                      class="input {{ 'is-danger' if errors.get('email') else '' }}"
+                      type="email"
+                      name="email"
+                      placeholder="you@example.com"
+                      autocomplete="email"
+                      required
+                    />
+                    <span class="icon is-small is-left">
+                      <i class="fas fa-envelope"></i>
+                    </span>
+                    {% if errors.get('email') %}
+                    <span class="icon is-small is-right">
+                      <i class="fas fa-exclamation-triangle"></i>
+                    </span>
+                    {% endif %}
+                  </div>
+                  {% if errors.get('email') %}
+                  <p class="help is-danger">{{ errors['email'] }}</p>
+                  {% endif %}
+                </div>
+
+                <div class="field">
+                  <label class="label" for="password">Password</label>
+                  <div class="control has-icons-left">
+                    <input
+                      id="password"
+                      class="input {{ 'is-danger' if errors.get('password') else '' }}"
+                      type="password"
+                      name="password"
+                      placeholder="Password"
+                      autocomplete="new-password"
+                      required
+                    />
+                    <span class="icon is-small is-left">
+                      <i class="fas fa-lock"></i>
+                    </span>
+                  </div>
+                  {% if errors.get('password') %}
+                  <p class="help is-danger">{{ errors['password'] }}</p>
+                  {% endif %}
+                </div>
+
+                <div class="field">
+                  <label class="label" for="password_confirm"
+                    >Repeat password</label
+                  >
+                  <div class="control has-icons-left">
+                    <input
+                      id="password_confirm"
+                      class="input {{ 'is-danger' if errors.get('password_confirm') else '' }}"
+                      type="password"
+                      name="password_confirm"
+                      placeholder="Repeat password"
+                      autocomplete="new-password"
+                      required
+                    />
+                    <span class="icon is-small is-left">
+                      <i class="fas fa-lock"></i>
+                    </span>
+                  </div>
+                  {% if errors.get('password_confirm') %}
+                  <p class="help is-danger">{{ errors['password_confirm'] }}</p>
+                  {% endif %}
+                </div>
+
+                <div class="field">
+                  <button class="button is-link is-fullwidth" type="submit">
+                    Create account
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>

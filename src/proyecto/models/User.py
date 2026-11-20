@@ -10,5 +10,10 @@ class User(db.Model):
     # atributos de la tabla
     id: Mapped[int] = mapped_column(unique=True, primary_key=True)
     email: Mapped[str] = mapped_column(String(254), unique=True, nullable=False)
-    password_hash: Mapped[str] = mapped_column(String(100), nullable=False)
+    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     username: Mapped[str] = mapped_column(String(255), nullable=False)
+
+    def __init__(self, username:str, email:str, password_hash:str) -> None:
+        self.username = username
+        self.email = email
+        self.password_hash = password_hash

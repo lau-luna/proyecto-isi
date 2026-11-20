@@ -21,10 +21,10 @@ def create_app(environment="development"):
 
     db.init_app(app)
     migrate.init_app(app, db)
-
-
-    app.register_blueprint(user_bp)
     
+    # blueprints
+    app.register_blueprint(user_bp)
+   
     @app.route("/")
     @app.route("/<name>")
     def index(name=None):
