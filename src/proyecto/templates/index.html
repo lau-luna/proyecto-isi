@@ -18,8 +18,28 @@
   </head>
   <body>
       
-    <nav class="container has-text-centered">
-      <h1 class="title is-1">Q&A site</h1>
+    <nav class="navbar container" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <a class="navbar-item title is-3 mb-0" href="{{ url_for('index') }}">
+          Q&amp;A site
+        </a>
+      </div>
+
+      <div class="navbar-end">
+        <div class="navbar-item">
+          {% if g.user %}
+            <span class="mr-3">Hola, <strong>{{ g.user.get_display_name() }}</strong></span>
+            <form action="{{ url_for('user.logout') }}" method="post">
+              <button class="button is-light" type="submit">Log out</button>
+            </form>
+          {% else %}
+            <div class="buttons">
+              <a class="button is-link" href="{{ url_for('user.login') }}">Log in</a>
+              <a class="button is-light" href="{{ url_for('user.register') }}">Register</a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
     </nav>
 
     {% if person %}
