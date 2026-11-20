@@ -1,6 +1,5 @@
 from argon2 import PasswordHasher
 from flask import Blueprint, render_template, request
-from markupsafe import escape
 from sqlalchemy import select
 
 from proyecto.extensions import db
@@ -60,10 +59,10 @@ def register():
     result_valid_register = {}
 
     if request.method == "POST":
-        username = escape(request.form["username"])
-        email = escape(request.form["email"])
-        password = escape(request.form["password"])
-        password_confirm = escape(request.form["password_confirm"])
+        username = request.form["username"]
+        email = request.form["email"]
+        password = request.form["password"]
+        password_confirm = request.form["password_confirm"]
 
         result_valid_register = valid_register(
             username, email, password, password_confirm
