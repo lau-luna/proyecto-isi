@@ -17,3 +17,7 @@ class User(db.Model):
         self.username = username
         self.email = email
         self.password_hash = password_hash
+
+    # Author interface
+    def get_display_name(self) -> str:
+        return self.username
