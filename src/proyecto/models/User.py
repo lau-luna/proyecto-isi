@@ -1,8 +1,11 @@
+from argon2 import PasswordHasher
+from argon2.exceptions import InvalidHashError, VerifyMismatchError
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from proyecto.extensions import db
 
+pass_hasher = PasswordHasher()
 
 class User(db.Model):
     __tablename__ = "user"
@@ -27,3 +30,9 @@ class User(db.Model):
 
     def get_display_name(self) -> str:
         return self.username
+
+    def verify_password(self, password: str) -> bool:
+        try:
+            return pass_hasher.verify(self.password_hash, password)
+        except (VerifyMismatchError, InvalidHashError):
+            return False
