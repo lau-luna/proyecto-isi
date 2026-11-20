@@ -39,7 +39,8 @@ src/proyecto/
   templates/       # Jinja2 templates, grouped by blueprint (user/register.html)
 migrations/        # Alembic migrations (versions/ is committed)
 tests/             # pytest; fixtures in conftest.py
-docs/              # project docs (Spanish), class diagrams, pattern justification
+docs/              # project docs (Spanish), diagrams and supporting material
+docs/deliverables/ # final class diagram and pattern justification (English)
 ```
 
 ## Conventions
@@ -57,7 +58,7 @@ docs/              # project docs (Spanish), class diagrams, pattern justificati
   - Ruff excludes `migrations/versions`.
 - **Passwords**: store only argon2id hashes (`PasswordHasher().hash`); never store or log plaintext.
 - **Queries**: use SQLAlchemy 2.0 style (`db.session.scalar(select(Model).where(...))`), not the legacy `Model.query` API.
-- **Language**: code, identifiers, UI copy and commit messages in English; `docs/` and the README are in Spanish.
+- **Language**: code, identifiers, UI copy and commit messages in English; `docs/` and the README are in Spanish, except final deliverables in `docs/deliverables/`, which are in English.
 
 ## Testing
 
@@ -71,6 +72,12 @@ docs/              # project docs (Spanish), class diagrams, pattern justificati
 - Test through the public interface (HTTP via `client`), then assert persisted state through `session`.
 - Add tests alongside every behavior change.
 
+## Requirements and domain design
+
+- The [GitHub issues](https://github.com/lau-luna/proyecto-isi/issues) define the required behavior. Read the relevant issue and its acceptance criteria before implementing a change.
+- `docs/deliverables/class-diagram.puml` is the canonical, editable conceptual class diagram; `class-diagram.png` is its rendered version. Keep both synchronized when the design changes.
+- Implement the classes, relationships and business rules represented in the diagram and the acceptance criteria. If a requirement changes the design, update the diagram and affected documentation in the same change.
+
 ## Git workflow
 
 - Branches are named after the GitHub issue: `<issue-number>-<short-name>` (e.g. `3-user-register`).
@@ -80,7 +87,7 @@ docs/              # project docs (Spanish), class diagrams, pattern justificati
 
 ## Design notes
 
-`docs/justificacion-patrones.md` documents the planned domain patterns:
+`docs/deliverables/pattern-justification.md` documents the domain patterns used by the final class diagram:
 
 - **Factory Method** for answer authors (human user vs. AI agent).
 - **Strategy** for pluggable LLM providers (`generate(prompt)`).
