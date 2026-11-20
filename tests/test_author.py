@@ -1,9 +1,11 @@
 from proyecto.models.Author import Author
-from proyecto.models.User import User
+from proyecto.models.RegularUser import RegularUser
 
 
 def make_user():
-    return User(username="testuser", email="test@example.com", password_hash="hash")
+    return RegularUser(
+        username="testuser", email="test@example.com", password_hash="hash"
+    )
 
 
 def test_user_implements_author():

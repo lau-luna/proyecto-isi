@@ -21,7 +21,7 @@ class User(db.Model):
 
     __mapper_args__ = {
         "polymorphic_on": role,
-        "polymorphic_identity": "user",
+        "polymorphic_abstract": True,
     }
 
     def __init__(self, username: str, email: str, password_hash: str) -> None:
