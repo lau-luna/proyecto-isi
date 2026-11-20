@@ -7,4 +7,5 @@ Importá acá cada modelo, por ejemplo:
 Así SQLAlchemy los registra en db.metadata (y Flask-Migrate los detecta)
 antes de configurar los mappers.
 """
-from proyecto.models import Category as Category
+from proyecto.models import Category
+from proyecto.models import User
