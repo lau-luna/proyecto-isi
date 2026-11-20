@@ -1,6 +1,6 @@
 import re
-
 from functools import wraps
+
 from argon2 import PasswordHasher
 from flask import Blueprint, g, redirect, render_template, request, session, url_for
 from sqlalchemy import select
@@ -87,13 +87,16 @@ def register():
 
     return render_template("user/register.html", errors=result_valid_register)
 
+
 def login_required(view):
     @wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
             return redirect(url_for("user.login"))
         return view(**kwargs)
+
     return wrapped_view
+
 
 @bp.route("/user/login", methods=["GET", "POST"])
 def login():
@@ -108,16 +111,16 @@ def login():
         if user is None or not user.verify_password(password):
             error = "Invalid email or password"
             return render_template("user/login.html", error=error), 401
-        
+
         session.clear()
         session["user_id"] = user.id
         return redirect(url_for("index"))
 
     return render_template("user/login.html", error=error)
 
+
 @bp.route("/user/logout", methods=["POST"])
 @login_required
 def logout():
     session.clear()
     return redirect(url_for("index"))
-    

@@ -7,6 +7,7 @@ from proyecto.extensions import db
 
 pass_hasher = PasswordHasher()
 
+
 class User(db.Model):
     __tablename__ = "user"
 
@@ -34,5 +35,5 @@ class User(db.Model):
     def verify_password(self, password: str) -> bool:
         try:
             return pass_hasher.verify(self.password_hash, password)
-        except (VerifyMismatchError, InvalidHashError):
+        except VerifyMismatchError, InvalidHashError:
             return False

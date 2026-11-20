@@ -19,7 +19,7 @@ class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = "postgresql://user@localhost/foo"
 
     @staticmethod
-    def init_(app):
+    def init_app(app):
         if not app.config.get("SECRET_KEY"):
             raise RuntimeError("SECRET_KEY must be set in production")
 
