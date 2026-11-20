@@ -1,4 +1,4 @@
-@startuml qa_diagram
+@startuml class-diagram
 title Conceptual Model - Q&A Platform
 
 skinparam classAttributeIconSize 0

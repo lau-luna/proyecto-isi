@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Log in</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+  </head>
+  <body>
+    <section class="section">
+      <div class="container">
+        <div class="columns is-centered">
+          <div
+            class="column is-12-mobile is-8-tablet is-6-desktop is-5-widescreen"
+          >
+            <div class="box">
+              <h1 class="title is-3 has-text-centered">Log in</h1>
+
+              {% if error %}
+              <div class="notification is-danger is-light">
+                {{ error }}
+              </div>
+              {% endif %}
+
+              <form action="{{ url_for('user.login') }}" method="post" novalidate>
+                <div class="field">
+                  <label class="label" for="email">Email</label>
+                  <div class="control has-icons-left">
+                    <input
+                      id="email"
+                      class="input"
+                      type="email"
+                      name="email"
+                      placeholder="you@example.com"
+                      autocomplete="email"
+                      required
+                    />
+                    <span class="icon is-small is-left">
+                      <i class="fas fa-envelope"></i>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label class="label" for="password">Password</label>
+                  <div class="control has-icons-left">
+                    <input
+                      id="password"
+                      class="input"
+                      type="password"
+                      name="password"
+                      placeholder="Password"
+                      autocomplete="current-password"
+                      required
+                    />
+                    <span class="icon is-small is-left">
+                      <i class="fas fa-lock"></i>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <button class="button is-link is-fullwidth" type="submit">
+                    Log in
+                  </button>
+                </div>
+              </form>
+
+              <p class="has-text-centered mt-4">
+                Don't have an account?
+                <a href="{{ url_for('user.register') }}">Register</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>

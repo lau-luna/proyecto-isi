@@ -4,6 +4,9 @@ import os
 class Config:
     TESTING = False
     SQLALCHEMY_SESSION_OPTIONS = {"expire_on_commit": False}
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = "Lax"
+    SESSION_COOKIE_SECURE = False
 
     @staticmethod
     def init_app(app):
@@ -11,7 +14,14 @@ class Config:
 
 
 class ProductionConfig(Config):
+    SECRET_KEY = os.environ.get("SECRET_KEY")
+    SESSION_COOKIE_SECURE = True
     SQLALCHEMY_DATABASE_URI = "postgresql://user@localhost/foo"
+
+    @staticmethod
+    def init_app(app):
+        if not app.config.get("SECRET_KEY"):
+            raise RuntimeError("SECRET_KEY must be set in production")
 
 
 class DevelopmentConfig(Config):
