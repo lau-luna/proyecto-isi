@@ -4,10 +4,10 @@ from flask import Flask, render_template
 
 from proyecto.config import config
 from proyecto.extensions import db, migrate
+from proyecto.routes.user import bp as user_bp
 
 from . import models  # noqa: F401  (registra los modelos en db.metadata)
 
-from proyecto.routes.user import bp as user_bp
 
 def create_app(environment="development"):
     # create and configure the app
@@ -21,10 +21,10 @@ def create_app(environment="development"):
 
     db.init_app(app)
     migrate.init_app(app, db)
-    
+
     # blueprints
     app.register_blueprint(user_bp)
-   
+
     @app.route("/")
     @app.route("/<name>")
     def index(name=None):
