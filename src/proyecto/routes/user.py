@@ -79,6 +79,7 @@ def register():
 
         if result_valid_register is None:
             register_user(username, email, password)
+            return (render_template("user/login.html", email=email), 200)
         else:
             return (
                 render_template("user/register.html", errors=result_valid_register),

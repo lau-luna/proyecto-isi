@@ -42,6 +42,9 @@
                       placeholder="you@example.com"
                       autocomplete="email"
                       required
+                      {% if email %}
+                        value="{{ email }}"
+                      {% endif %}
                     />
                     <span class="icon is-small is-left">
                       <i class="fas fa-envelope"></i>
