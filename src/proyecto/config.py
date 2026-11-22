@@ -36,6 +36,7 @@ class TestingConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
     TESTING = True
     SECRET_KEY = "TEST"
+    WTF_CSRF_ENABLED = False
 
 
 config = {
