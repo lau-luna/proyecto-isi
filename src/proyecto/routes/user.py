@@ -8,7 +8,7 @@ from sqlalchemy import select
 from proyecto.extensions import db
 from proyecto.models.RegularUser import RegularUser
 from proyecto.models.User import User
-from proyecto.utils.user_forms import RegisterForm, LoginForm
+from proyecto.utils.user_forms import LoginForm, RegisterForm
 
 bp = Blueprint("user", __name__, template_folder="templates")
 
@@ -111,7 +111,7 @@ def login():
 
     if form.validate_on_submit():
         email = form.email.data.strip()
-        password = form.password.data 
+        password = form.password.data
 
         user = db.session.scalar(select(User).where(User.email == email))
 

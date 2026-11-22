@@ -93,13 +93,11 @@ def test_password_with_special_chars_is_not_modified(client, session, user_data)
     assert user is not None
     assert PasswordHasher().verify(user.password_hash, user_data["password"])
 
+
 def test_register_without_csrf_token_is_rejected(app, client, monkeypatch, user_data):
     monkeypatch.setitem(app.config, "WTF_CSRF_ENABLED", True)
 
-    response = client.post(
-        "/user/register",
-        data=user_data
-    )
+    response = client.post("/user/register", data=user_data)
 
     assert response.status_code == 400
     assert b"The CSRF token is missing." in response.data
