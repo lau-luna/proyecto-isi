@@ -6,19 +6,25 @@
     <title>Document</title>
 
     <!-- 1. Tema visual de Prism.js (One Dark) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism-themes/1.9.0/prism-one-dark.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism-themes/1.9.0/prism-one-dark.min.css"
+    />
 
     <!-- 2. Componente web md-block -->
     <script type="module" src="https://md-block.verou.me/md-block.js"></script>
 
-  <link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css"
->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css"
+    />
   </head>
   <body>
-      
-    <nav class="navbar container" role="navigation" aria-label="main navigation">
+    <nav
+      class="navbar container"
+      role="navigation"
+      aria-label="main navigation"
+    >
       <div class="navbar-brand">
         <a class="navbar-item title is-3 mb-0" href="{{ url_for('index') }}">
           Q&amp;A site
@@ -28,15 +34,22 @@
       <div class="navbar-end">
         <div class="navbar-item">
           {% if g.user %}
-            <span class="mr-3">Hola, <strong>{{ g.user.get_display_name() }}</strong></span>
-            <form action="{{ url_for('user.logout') }}" method="post">
-              <button class="button is-light" type="submit">Log out</button>
-            </form>
+          <span class="mr-3"
+            >Hola, <strong>{{ g.user.get_display_name() }}</strong></span
+          >
+          <form action="{{ url_for('user.logout') }}" method="post">
+            {{ form.hidden_tag() }} {{ form.csrf_token }} {{
+            form.submit(class="button is-light") }}
+          </form>
           {% else %}
-            <div class="buttons">
-              <a class="button is-link" href="{{ url_for('user.login') }}">Log in</a>
-              <a class="button is-light" href="{{ url_for('user.register') }}">Register</a>
-            </div>
+          <div class="buttons">
+            <a class="button is-link" href="{{ url_for('user.login') }}"
+              >Log in</a
+            >
+            <a class="button is-light" href="{{ url_for('user.register') }}"
+              >Register</a
+            >
+          </div>
           {% endif %}
         </div>
       </div>
@@ -52,19 +65,18 @@
       ## Hola 
       - item1 
       - item2 
-      - item3 
+      - item3
 
       ```java 
-      public class Main {
-        public static int suma(int a, int b) {
-          return a + b; 
-        }
-        public static void main(String[] args) {
-          System.out.println(suma(1+2));
-        }
-      }
-       
-      ```
+        public class Main { 
+          public static int suma(int a, int b) { 
+            return a + b; 
+          } 
+          public static void main(String[] args) { 
+            System.out.println(suma(1+2)); 
+          } 
+        } 
+        ```
     </md-block>
 
     <!-- 3. Script principal de Prism.js -->

@@ -41,6 +41,20 @@ def test_login_page_renders(client):
     assert b"Log in" in response.data
 
 
+def test_login_without_csrf_token_is_rejected(app, client, monkeypatch):
+    monkeypatch.setitem(app.config, "WTF_CSRF_ENABLED", True)
+
+    response = client.post(
+        "/user/login",
+        data={"email": "cata@example.com", "password": "secretpassword"},
+    )
+
+    assert response.status_code == 400
+    assert b"The CSRF token is missing." in response.data
+    with client.session_transaction() as flask_session:
+        assert "user_id" not in flask_session
+
+
 def test_login_success_cookie_and_session_persistence(client, session):
     user = create_test_user(session)
     user_id = user.id

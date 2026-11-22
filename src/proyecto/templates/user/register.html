@@ -15,7 +15,10 @@
     />
   </head>
   <body>
-    <section class="section">
+    <section
+      class="section is-flex is-align-items-center"
+      style="min-height: 100vh"
+    >
       <div class="container">
         <div class="columns is-centered">
           <div
@@ -24,109 +27,87 @@
             <div class="box">
               <h1 class="title is-3 has-text-centered">Register</h1>
 
-              {% set errors = errors|default({}, true) %} {% set values =
-              values|default({}) %}
-              <form action="{{ url_for('user.register') }}" method="post" novalidate>
+              <form
+                action="{{ url_for('user.register') }}"
+                method="post"
+                novalidate
+              >
+                {{ form.hidden_tag() }} {{ form.csrf_token }}
                 <div class="field">
-                  <label class="label" for="username">Username</label>
+                  {{ form.username.label(class="label") }}
                   <div class="control has-icons-left has-icons-right">
-                    <input
-                      id="username"
-                      class="input {{ 'is-danger' if errors.get('username') else ('is-success' if username_available else '') }}"
-                      type="text"
-                      name="username"
-                      placeholder="coolusername"
-                      autocomplete="username"
-                      required
-                    />
+                    {{ form.username(class="input" + (" is-danger" if
+                    form.username.errors else ""), placeholder="coolusername",
+                    autocomplete="username") }}
                     <span class="icon is-small is-left">
                       <i class="fas fa-user"></i>
                     </span>
-                    {% if errors.get('username') %}
+                    {% if form.username.errors %}
                     <span class="icon is-small is-right">
                       <i class="fas fa-exclamation-triangle"></i>
                     </span>
                     {% endif %}
                   </div>
-                  {% if errors.get('username') %}
-                  <p class="help is-danger">{{ errors['username'] }}</p>
-                  {% endif %}
+                  {% for error in form.username.errors %}
+                  <p class="help is-danger">{{ error }}</p>
+                  {% endfor %}
                 </div>
 
                 <div class="field">
-                  <label class="label" for="email">Email</label>
+                  {{ form.email.label(class="label") }}
                   <div class="control has-icons-left has-icons-right">
-                    <input
-                      id="email"
-                      class="input {{ 'is-danger' if errors.get('email') else '' }}"
-                      type="email"
-                      name="email"
-                      placeholder="you@example.com"
-                      autocomplete="email"
-                      required
-                    />
+                    {{ form.email(class="input" + (" is-danger" if
+                    form.email.errors else ""), type="email",
+                    placeholder="you@example.com", autocomplete="email") }}
                     <span class="icon is-small is-left">
                       <i class="fas fa-envelope"></i>
                     </span>
-                    {% if errors.get('email') %}
+                    {% if form.email.errors %}
                     <span class="icon is-small is-right">
                       <i class="fas fa-exclamation-triangle"></i>
                     </span>
                     {% endif %}
                   </div>
-                  {% if errors.get('email') %}
-                  <p class="help is-danger">{{ errors['email'] }}</p>
-                  {% endif %}
+                  {% for error in form.email.errors %}
+                  <p class="help is-danger">{{ error }}</p>
+                  {% endfor %}
                 </div>
 
                 <div class="field">
-                  <label class="label" for="password">Password</label>
+                  {{ form.password.label(class="label") }}
                   <div class="control has-icons-left">
-                    <input
-                      id="password"
-                      class="input {{ 'is-danger' if errors.get('password') else '' }}"
-                      type="password"
-                      name="password"
-                      placeholder="Password"
-                      autocomplete="new-password"
-                      required
-                    />
+                    {{ form.password(class="input" + (" is-danger" if
+                    form.password.errors else ""), type="password",
+                    placeholder="Password", autocomplete="new-password") }}
                     <span class="icon is-small is-left">
                       <i class="fas fa-lock"></i>
                     </span>
                   </div>
-                  {% if errors.get('password') %}
-                  <p class="help is-danger">{{ errors['password'] }}</p>
-                  {% endif %}
+                  {% for error in form.password.errors %}
+                  <p class="help is-danger">{{ error }}</p>
+                  {% endfor %}
                 </div>
 
                 <div class="field">
-                  <label class="label" for="password_confirm"
-                    >Repeat password</label
-                  >
+                  {{ form.password_confirm.label(class="label") }}
                   <div class="control has-icons-left">
-                    <input
-                      id="password_confirm"
-                      class="input {{ 'is-danger' if errors.get('password_confirm') else '' }}"
-                      type="password"
-                      name="password_confirm"
-                      placeholder="Repeat password"
-                      autocomplete="new-password"
-                      required
-                    />
+                    {{ form.password_confirm(class="input" + (" is-danger" if
+                    form.password_confirm.errors else ""), type="password",
+                    placeholder="Repeat password", autocomplete="new-password")
+                    }}
                     <span class="icon is-small is-left">
                       <i class="fas fa-lock"></i>
                     </span>
                   </div>
-                  {% if errors.get('password_confirm') %}
-                  <p class="help is-danger">{{ errors['password_confirm'] }}</p>
-                  {% endif %}
+                  {% for error in form.password_confirm.errors %}
+                  <p class="help is-danger">{{ error }}</p>
+                  {% endfor %}
                 </div>
 
+                <br />
+
                 <div class="field">
-                  <button class="button is-link is-fullwidth" type="submit">
-                    Create account
-                  </button>
+                  {{ form.submit(class="button is-link is-fullwidth") }}
                 </div>
               </form>
             </div>

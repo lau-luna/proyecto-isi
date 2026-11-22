@@ -8,6 +8,7 @@ from sqlalchemy import select
 from proyecto.extensions import db
 from proyecto.models.RegularUser import RegularUser
 from proyecto.models.User import User
+from proyecto.utils.user_forms import RegisterForm, LoginForm
 
 bp = Blueprint("user", __name__, template_folder="templates")
 
@@ -65,27 +66,32 @@ def register_user(username, email, password):
 
 @bp.route("/user/register", methods=["GET", "POST"])
 def register():
-    result_valid_register = {}
+    form = RegisterForm()
 
-    if request.method == "POST":
-        username = request.form.get("username", "").strip()
-        email = request.form.get("email", "").strip()
-        password = request.form.get("password", "")
-        password_confirm = request.form.get("password_confirm", "")
+    if form.validate_on_submit():
+        username = form.username.data.strip()
+        email = form.email.data.strip()
+        password = form.password.data
+        password_confirm = form.password_confirm.data
 
-        result_valid_register = valid_register(
-            username, email, password, password_confirm
-        )
-
-        if result_valid_register is None:
+        errors = valid_register(username, email, password, password_confirm)
+        if errors is None:
             register_user(username, email, password)
-        else:
             return (
-                render_template("user/register.html", errors=result_valid_register),
-                400,
+                render_template(
+                    "user/login.html",
+                    form=LoginForm(formdata=None, email=email),
+                    email=email,
+                ),
+                200,
             )
 
-    return render_template("user/register.html", errors=result_valid_register)
+        for field, message in errors.items():
+            getattr(form, field).errors.append(message)
+
+    return render_template("user/register.html", form=form), (
+        400 if request.method == "POST" else 200
+    )
 
 
 def login_required(view):
@@ -101,22 +107,23 @@ def login_required(view):
 @bp.route("/user/login", methods=["GET", "POST"])
 def login():
     error = None
+    form = LoginForm()
 
-    if request.method == "POST":
-        email = request.form.get("email", "").strip()
-        password = request.form.get("password", "")
+    if form.validate_on_submit():
+        email = form.email.data.strip()
+        password = form.password.data 
 
         user = db.session.scalar(select(User).where(User.email == email))
 
         if user is None or not user.verify_password(password):
             error = "Invalid email or password"
-            return render_template("user/login.html", error=error), 401
+            return render_template("user/login.html", form=form, error=error), 401
 
         session.clear()
         session["user_id"] = user.id
         return redirect(url_for("index"))
 
-    return render_template("user/login.html", error=error)
+    return render_template("user/login.html", form=form, error=error)
 
 
 @bp.route("/user/logout", methods=["POST"])
