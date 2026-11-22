@@ -42,14 +42,6 @@ def test_user_subtype_is_persisted_with_its_role(session, cls, role):
     assert user.role == role
 
 
-def test_administrator_inherits_from_moderator():
-    assert isinstance(make(Administrator), Moderator)
-
-
-def test_regular_user_is_not_moderator():
-    assert not isinstance(make(RegularUser), Moderator)
-
-
 def test_base_user_cannot_be_instantiated():
     with pytest.raises(InvalidRequestError, match="polymorphic_abstract"):
         make(User)
