@@ -1,12 +1,15 @@
 from sqlalchemy import ForeignKey, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from proyecto.models.Post import Post
+from proyecto.models.Tag import Tag
+from proyecto.models.QuestionTag import question_tag
 
 
 class Question(Post):
     __tablename__ = "question"
     id: Mapped[int] = mapped_column(ForeignKey("post.id"), primary_key=True)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
+    tags: Mapped[list[Tag]] = relationship(secondary=question_tag)
 
     __mapper_args__ = {"polymorphic_identity": "question"}
