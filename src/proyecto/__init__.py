@@ -54,7 +54,6 @@ def create_app(environment="development"):
     # blueprints
     app.register_blueprint(user_bp)
 
-
     @app.route("/")
     @app.route("/<name>")
     def index(name=None):
