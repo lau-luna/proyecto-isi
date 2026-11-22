@@ -1,9 +1,10 @@
 from argon2 import PasswordHasher
 from argon2.exceptions import InvalidHashError, VerifyMismatchError
 from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from proyecto.extensions import db
+from proyecto.models.Question import Question
 
 pass_hasher = PasswordHasher()
 
@@ -18,6 +19,7 @@ class User(db.Model):
     role: Mapped[str] = mapped_column(
         String(20), nullable=False, server_default="regular_user"
     )
+    questions: Mapped[list[Question]] = relationship()
 
     __mapper_args__ = {
         "polymorphic_on": role,
