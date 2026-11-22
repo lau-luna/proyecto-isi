@@ -36,7 +36,7 @@
                 method="post"
                 novalidate
               >
-                {{ form.hidden_tag() }}
+                {{ form.hidden_tag() }} {{ form.csrf_token }}
                 <div class="field">
                   {{ form.email.label(class="label") }}
                   <div class="control has-icons-left">
