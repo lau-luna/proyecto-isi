@@ -3,8 +3,11 @@ import os
 from flask import Flask, g, render_template, session
 from flask_wtf.csrf import CSRFProtect
 
+from proyecto.auth import user_has_role
 from proyecto.config import config
 from proyecto.extensions import db, migrate
+from proyecto.models.Administrator import Administrator
+from proyecto.models.Moderator import Moderator
 from proyecto.models.User import User
 from proyecto.routes.user import bp as user_bp
 from proyecto.utils.index_forms import LogOutForm
@@ -38,6 +41,15 @@ def create_app(environment="development"):
             g.user = None
         else:
             g.user = db.session.get(User, user_id)
+
+    # Make role checks available in every template, so templates can show
+    # or hide actions with the same rule the views use, e.g.
+    # {% if user_has_role(g.user, Moderator) %} ... {% endif %}
+    app.jinja_env.globals.update(
+        user_has_role=user_has_role,
+        Moderator=Moderator,
+        Administrator=Administrator,
+    )
 
     # blueprints
     app.register_blueprint(user_bp)

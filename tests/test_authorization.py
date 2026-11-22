@@ -129,3 +129,30 @@ def test_user_has_role_follows_class_inheritance(cls, allowed_roles, expected):
 
 def test_user_has_role_is_false_for_visitor():
     assert user_has_role(None, RegularUser, Moderator) is False
+
+
+@pytest.mark.parametrize(
+    ("cls", "visible_badge", "hidden_badges"),
+    [
+        (RegularUser, None, [b"Moderator", b"Administrator"]),
+        (Moderator, b"Moderator", [b"Administrator"]),
+        (Administrator, b"Administrator", [b"Moderator"]),
+    ],
+)
+def test_navbar_shows_role_badge(client, session, cls, visible_badge, hidden_badges):
+    create_user(session, cls, "badge@example.com")
+    log_in(client, "badge@example.com")
+
+    page = client.get("/").data
+
+    if visible_badge is not None:
+        assert visible_badge in page
+    for badge in hidden_badges:
+        assert badge not in page
+
+
+def test_navbar_shows_no_role_badge_to_visitor(client, init_database):
+    page = client.get("/").data
+
+    assert b"Moderator" not in page
+    assert b"Administrator" not in page
