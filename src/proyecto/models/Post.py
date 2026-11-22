@@ -18,7 +18,7 @@ class Post(db.Model):
     score: Mapped[int] = mapped_column(server_default="0", nullable=False)
     type: Mapped[str] = mapped_column(String(20), nullable=False)
 
-    __mapped_args__ = {
+    __mapper_args__ = {
         "polymorphic_on": type,
     }
 

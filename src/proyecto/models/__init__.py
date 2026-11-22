@@ -7,3 +7,5 @@ Importá acá cada modelo para que SQLAlchemy lo registre en db.metadata
 from proyecto.models import Category as Category
 from proyecto.models import RegularUser as RegularUser
 from proyecto.models import User as User
+from proyecto.models import Post as Post
+from proyecto.models import Question as Question
