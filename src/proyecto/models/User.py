@@ -37,3 +37,7 @@ class User(db.Model):
             return pass_hasher.verify(self.password_hash, password)
         except VerifyMismatchError, InvalidHashError:
             return False
+
+    def post_question(self, title, body, category, question, tags):
+        # TODO: implement
+        pass
