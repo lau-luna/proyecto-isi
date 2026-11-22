@@ -10,3 +10,4 @@ from proyecto.models import User as User
 from proyecto.models import Post as Post
 from proyecto.models import Question as Question
 from proyecto.models import Tag as Tag
+from proyecto.models import QuestionTag as QuestionTag
