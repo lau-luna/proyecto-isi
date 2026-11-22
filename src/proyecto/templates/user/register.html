@@ -15,7 +15,7 @@
     />
   </head>
   <body>
-    <section class="section">
+    <section class="section is-flex is-align-items-center" style="min-height: 100vh">
       <div class="container">
         <div class="columns is-centered">
           <div
@@ -24,12 +24,18 @@
             <div class="box">
               <h1 class="title is-3 has-text-centered">Register</h1>
 
-              <form action="{{ url_for('user.register') }}" method="post" novalidate>
+              <form
+                action="{{ url_for('user.register') }}"
+                method="post"
+                novalidate
+              >
                 {{ form.hidden_tag() }}
                 <div class="field">
                   {{ form.username.label(class="label") }}
                   <div class="control has-icons-left has-icons-right">
-                    {{ form.username(class="input" + (" is-danger" if form.username.errors else ""), placeholder="coolusername", autocomplete="username") }}
+                    {{ form.username(class="input" + (" is-danger" if
+                    form.username.errors else ""), placeholder="coolusername",
+                    autocomplete="username") }}
                     <span class="icon is-small is-left">
                       <i class="fas fa-user"></i>
                     </span>
@@ -47,7 +53,9 @@
                 <div class="field">
                   {{ form.email.label(class="label") }}
                   <div class="control has-icons-left has-icons-right">
-                    {{ form.email(class="input" + (" is-danger" if form.email.errors else ""), type="email", placeholder="you@example.com", autocomplete="email") }}
+                    {{ form.email(class="input" + (" is-danger" if
+                    form.email.errors else ""), type="email",
+                    placeholder="you@example.com", autocomplete="email") }}
                     <span class="icon is-small is-left">
                       <i class="fas fa-envelope"></i>
                     </span>
@@ -65,7 +73,9 @@
                 <div class="field">
                   {{ form.password.label(class="label") }}
                   <div class="control has-icons-left">
-                    {{ form.password(class="input" + (" is-danger" if form.password.errors else ""), type="password", placeholder="Password", autocomplete="new-password") }}
+                    {{ form.password(class="input" + (" is-danger" if
+                    form.password.errors else ""), type="password",
+                    placeholder="Password", autocomplete="new-password") }}
                     <span class="icon is-small is-left">
                       <i class="fas fa-lock"></i>
                     </span>
@@ -78,7 +88,10 @@
                 <div class="field">
                   {{ form.password_confirm.label(class="label") }}
                   <div class="control has-icons-left">
-                    {{ form.password_confirm(class="input" + (" is-danger" if form.password_confirm.errors else ""), type="password", placeholder="Repeat password", autocomplete="new-password") }}
+                    {{ form.password_confirm(class="input" + (" is-danger" if
+                    form.password_confirm.errors else ""), type="password",
+                    placeholder="Repeat password", autocomplete="new-password")
+                    }}
                     <span class="icon is-small is-left">
                       <i class="fas fa-lock"></i>
                     </span>
@@ -87,6 +100,8 @@
                   <p class="help is-danger">{{ error }}</p>
                   {% endfor %}
                 </div>
+
+                <br />
 
                 <div class="field">
                   {{ form.submit(class="button is-link is-fullwidth") }}

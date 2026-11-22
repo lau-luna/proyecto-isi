@@ -8,7 +8,7 @@ from sqlalchemy import select
 from proyecto.extensions import db
 from proyecto.models.RegularUser import RegularUser
 from proyecto.models.User import User
-from proyecto.utils.register_form import RegisterForm
+from proyecto.utils.user_forms import RegisterForm, LoginForm
 
 bp = Blueprint("user", __name__, template_folder="templates")
 
@@ -77,7 +77,14 @@ def register():
         errors = valid_register(username, email, password, password_confirm)
         if errors is None:
             register_user(username, email, password)
-            return render_template("user/login.html", email=email), 200
+            return (
+                render_template(
+                    "user/login.html",
+                    form=LoginForm(formdata=None, email=email),
+                    email=email,
+                ),
+                200,
+            )
 
         for field, message in errors.items():
             getattr(form, field).errors.append(message)
@@ -100,22 +107,23 @@ def login_required(view):
 @bp.route("/user/login", methods=["GET", "POST"])
 def login():
     error = None
+    form = LoginForm()
 
-    if request.method == "POST":
-        email = request.form.get("email", "").strip()
-        password = request.form.get("password", "")
+    if form.validate_on_submit():
+        email = form.email.data.strip()
+        password = form.password.data 
 
         user = db.session.scalar(select(User).where(User.email == email))
 
         if user is None or not user.verify_password(password):
             error = "Invalid email or password"
-            return render_template("user/login.html", error=error), 401
+            return render_template("user/login.html", form=form, error=error), 401
 
         session.clear()
         session["user_id"] = user.id
         return redirect(url_for("index"))
 
-    return render_template("user/login.html", error=error)
+    return render_template("user/login.html", form=form, error=error)
 
 
 @bp.route("/user/logout", methods=["POST"])
