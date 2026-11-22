@@ -8,7 +8,7 @@ from proyecto.extensions import db
 
 
 class Post(db.Model):
-    __abstract__ = True
+    __tablename__ = "post"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     body: Mapped[str] = mapped_column(String(), nullable=False)
@@ -16,6 +16,11 @@ class Post(db.Model):
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
     score: Mapped[int] = mapped_column(server_default="0", nullable=False)
+    type: Mapped[str] = mapped_column(String(20), nullable=False)
+
+    __mapped_args__ = {
+        "polymorphic_on": type,
+    }
 
     # TODO: implement
     def upvote(self, User):
