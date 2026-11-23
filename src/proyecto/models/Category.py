@@ -10,5 +10,8 @@ class Category(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(30))
 
+    def __init__(self, name: str) -> None:
+        self.name = name
+
     def __repr__(self) -> str:
         return f"Category(id={self.id!r}, name={self.name!r})"
