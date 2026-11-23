@@ -6,6 +6,7 @@ from flask_wtf.csrf import CSRFProtect
 from proyecto.config import config
 from proyecto.extensions import db, migrate
 from proyecto.models.User import User
+from proyecto.routes.tag import bp as tag_bp
 from proyecto.routes.user import bp as user_bp
 from proyecto.seeds import seed_categories
 from proyecto.utils.index_forms import LogOutForm
@@ -45,6 +46,7 @@ def create_app(environment="development"):
 
     # blueprints
     app.register_blueprint(user_bp)
+    app.register_blueprint(tag_bp)
 
     @app.route("/")
     @app.route("/<name>")

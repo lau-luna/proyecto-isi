@@ -13,3 +13,6 @@ def test_categories_are_seeded_and_idempotent(session):
 
     seed_categories()
     assert sorted(session.scalars(select(Category.name)).all()) == initial_names
+
+def test_get_categories(client, session, ):
+
