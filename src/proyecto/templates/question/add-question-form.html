@@ -1,0 +1,25 @@
+{% block add-question-form %}
+<form action="{{ url_for('question') }}" method="post" novalidate>
+  {{ form.hidden_tag() }} {{ form.csrf_token }}
+  <div class="field">
+    {{ form.title.label(class="label") }}
+    <div class="control">
+      {{ form.title(class="input", placeholder="The title of your question")}}
+    </div>
+  </div>
+
+  <div class="field">
+    {{ form.tags.label(class="label") }}
+    <div class="control">
+      {{ form.tags(class="input", placeholder="simpletag multiple-word-tag
+      example-tag") }}
+    </div>
+  </div>
+
+  <br />
+
+  <div class="field">
+    <button class="button is-link is-fullwidth" type="submit">Log in</button>
+  </div>
+</form>
+{% endblock %}
