@@ -7,6 +7,7 @@ from proyecto.config import config
 from proyecto.extensions import db, migrate
 from proyecto.models.User import User
 from proyecto.routes.user import bp as user_bp
+from proyecto.seeds import seed_categories
 from proyecto.utils.index_forms import LogOutForm
 
 from . import models  # noqa: F401  (registra los modelos en db.metadata)
@@ -28,8 +29,11 @@ def create_app(environment="development"):
     app.config.from_object(config[environment])
     config[environment].init_app(app)
 
+    # database migration and seeding
     db.init_app(app)
     migrate.init_app(app, db)
+    with app.app_context():
+        seed_categories()
 
     @app.before_request
     def load_logged_in_user():
@@ -41,7 +45,6 @@ def create_app(environment="development"):
 
     # blueprints
     app.register_blueprint(user_bp)
-
 
     @app.route("/")
     @app.route("/<name>")
