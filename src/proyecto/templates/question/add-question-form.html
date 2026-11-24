@@ -1,25 +1,78 @@
-{% block add-question-form %}
-<form action="{{ url_for('question') }}" method="post" novalidate>
-  {{ form.hidden_tag() }} {{ form.csrf_token }}
+{% extends "base.html" %}
+
+{% block title %}Ask a question{% endblock %}
+
+{% block content %}
+<h1 class="title">Ask a question</h1>
+
+<form
+  class="box"
+  action="{{ url_for('question.post_question') }}"
+  method="post"
+  novalidate
+>
+  {{ form.hidden_tag() }}
+
   <div class="field">
     {{ form.title.label(class="label") }}
     <div class="control">
-      {{ form.title(class="input", placeholder="The title of your question")}}
+      {{ form.title(
+        class="input" + (" is-danger" if form.title.errors else ""),
+        placeholder="The title of your question"
+      ) }}
     </div>
+    {% for error in form.title.errors %}
+    <p class="help is-danger">{{ error }}</p>
+    {% endfor %}
+  </div>
+
+  <div class="field">
+    {{ form.category.label(class="label") }}
+    <div class="control">
+      <div class="select is-fullwidth">
+        {{ form.category }}
+      </div>
+    </div>
+    {% for error in form.category.errors %}
+    <p class="help is-danger">{{ error }}</p>
+    {% endfor %}
+  </div>
+
+  <div class="field">
+    {{ form.body.label(class="label") }}
+    <div class="control">
+      {{ form.body(
+        class="textarea" + (" is-danger" if form.body.errors else ""),
+        rows=10,
+        placeholder="Describe your question here (Markdown supported)"
+      ) }}
+    </div>
+    {% for error in form.body.errors %}
+    <p class="help is-danger">{{ error }}</p>
+    {% endfor %}
   </div>
 
   <div class="field">
     {{ form.tags.label(class="label") }}
     <div class="control">
-      {{ form.tags(class="input", placeholder="simpletag multiple-word-tag
-      example-tag") }}
+      {{ form.tags(
+        class="input" + (" is-danger" if form.tags.errors else ""),
+        placeholder="coding functional-programming haskell",
+        aria_describedby="tags-help"
+      ) }}
     </div>
+    <p id="tags-help" class="help">
+      Separate tags with spaces. Use hyphens for multi-word tags.
+    </p>
+    {% for error in form.tags.errors %}
+    <p class="help is-danger">{{ error }}</p>
+    {% endfor %}
   </div>
 
-  <br />
+  <br>
 
-  <div class="field">
-    <button class="button is-link is-fullwidth" type="submit">Log in</button>
+  <div class="field is-centered">
+    {{ form.submit(class="button is-link") }}
   </div>
 </form>
 {% endblock %}

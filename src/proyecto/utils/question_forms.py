@@ -7,5 +7,5 @@ class AddQuestionForm(FlaskForm):
     title = StringField("Title", validators=[DataRequired(), Length(max=255)])
     category = SelectField("Category", coerce=int, validators=[DataRequired()])
     tags = StringField("Tags", validators=[])
-    body = TextAreaField("Body", validators=[DataRequired()])
+    body = TextAreaField("Description", validators=[DataRequired()])
     submit = SubmitField("Ask question")

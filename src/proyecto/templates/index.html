@@ -1,87 +1,12 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+{% extends "base.html" %} {% block content %} {% if person %}
+<h1 class="title">Hello {{ person }}!</h1>
+{% else %}
+<h1 class="title">Hello world!</h1>
+{% endif %}
 
-    <!-- 1. Tema visual de Prism.js (One Dark) -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/prism-themes/1.9.0/prism-one-dark.min.css"
-    />
-
-    <!-- 2. Componente web md-block -->
-    <script type="module" src="https://md-block.verou.me/md-block.js"></script>
-
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css"
-    />
-  </head>
-  <body>
-    <nav
-      class="navbar container"
-      role="navigation"
-      aria-label="main navigation"
-    >
-      <div class="navbar-brand">
-        <a class="navbar-item title is-3 mb-0" href="{{ url_for('index') }}">
-          Q&amp;A site
-        </a>
-      </div>
-
-      <div class="navbar-end">
-        <div class="navbar-item">
-          {% if g.user %}
-          <span class="mr-3"
-            >Hola, <strong>{{ g.user.get_display_name() }}</strong></span
-          >
-          <form action="{{ url_for('user.logout') }}" method="post">
-            {{ form.hidden_tag() }} {{ form.csrf_token }} {{
-            form.submit(class="button is-light") }}
-          </form>
-          {% else %}
-          <div class="buttons">
-            <a class="button is-link" href="{{ url_for('user.login') }}"
-              >Log in</a
-            >
-            <a class="button is-light" href="{{ url_for('user.register') }}"
-              >Register</a
-            >
-          </div>
-          {% endif %}
-        </div>
-      </div>
-    </nav>
-
-    {% if person %}
-    <h1>hello {{ person }}!</h1>
-    {% else %}
-    <h1>Hello world!</h1>
-    {% endif %}
-
-    <md-block>
-      ## Hola 
-      - item1 
-      - item2 
-      - item3
-
-      ```java 
-        public class Main { 
-          public static int suma(int a, int b) { 
-            return a + b; 
-          } 
-          public static void main(String[] args) { 
-            System.out.println(suma(1+2)); 
-          } 
-        } 
-        ```
-    </md-block>
-
-    <!-- 3. Script principal de Prism.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <!-- 4. (Opcional) Autocarga de componentes para lenguajes específicos si fuera necesario, o usa los componentes estándar -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
-  </body>
-</html>
+<md-block>
+  ## Hola - item1 - item2 - item3 ```java public class Main { public static int
+  suma(int a, int b) { return a + b; } public static void main(String[] args) {
+  System.out.println(suma(1+2)); } } ```
+</md-block>
+{% endblock %}

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Q&amp;A site{% endblock %}</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism-themes/1.9.0/prism-one-dark.min.css"
+    />
+    <script type="module" src="https://md-block.verou.me/md-block.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css"
+    />
+    {% block head %}{% endblock %}
+  </head>
+  <body>
+    <nav
+      class="navbar container"
+      role="navigation"
+      aria-label="main navigation"
+    >
+      <div class="navbar-brand">
+        <a class="navbar-item title is-3 mb-0" href="{{ url_for('index') }}">
+          Q&amp;A site
+        </a>
+      </div>
+
+      <div class="navbar-end">
+        <div class="navbar-item">
+          {% if g.user %}
+          <span class="mr-3">
+            Hello, <strong>{{ g.user.get_display_name() }}</strong>
+          </span>
+          <form action="{{ url_for('user.logout') }}" method="post">
+            {{ logout_form.hidden_tag() }}
+            {{ logout_form.submit(class="button is-light") }}
+          </form>
+          {% else %}
+          <div class="buttons">
+            <a class="button is-link" href="{{ url_for('user.login') }}">
+              Log in
+            </a>
+            <a class="button is-light" href="{{ url_for('user.register') }}">
+              Register
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+
+    <main class="section">
+      <div class="container">{% block content %}{% endblock %}</div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+  </body>
+</html>
