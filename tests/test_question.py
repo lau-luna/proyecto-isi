@@ -22,13 +22,11 @@ def login_test_user(client, session):
     )
 
 
-# TODO: Necesito el decorador @login-required para este test
-""""
 def test_question_form_requires_login(client):
     response = client.get("/question")
 
-    assert response.status_code == 400
-"""
+    assert response.status_code == 302
+    assert response.headers["Location"] == "/user/login"
 
 
 def test_question_form_renders(client, session):
