@@ -120,11 +120,15 @@ def test_posting_a_valid_question_is_created_and_stored(client, session):
 
     assert response.status_code == 302
 
-    questions = db.session.scalars(select(Question)).all()
+    questions = db.session.scalars(select(Question).join(Category)).all()
     assert len(questions) == 1
     question = questions[0]
     assert question.title == "How do I exit vim"
     assert question.body == "pls help I can't exit"
+
+    category = db.session.scalar(select(Category).where(Category.name == "Programming"))
+    assert category is not None
+    assert question.category_id == category.id
 
     tags = db.session.scalars(select(Tag.name)).all()
     assert sorted(tags) == ["code-editors", "vim"]
@@ -132,7 +136,6 @@ def test_posting_a_valid_question_is_created_and_stored(client, session):
 
     user = db.session.scalar(select(User).where(User.email == "cata@example.com"))
     assert user is not None
-
     assert question.user_id == user.id
 
     post = db.session.scalar(select(Post).where(Post.id == question.id))
@@ -140,5 +143,3 @@ def test_posting_a_valid_question_is_created_and_stored(client, session):
 
     assert post.id == question.id
     assert post.type == "question"
-
-    
