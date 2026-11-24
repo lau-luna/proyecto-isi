@@ -34,9 +34,15 @@
           <span class="mr-3">
             Hello, <strong>{{ g.user.get_display_name() }}</strong>
           </span>
+          {# Administrator is checked first: an Administrator is also a
+          Moderator. #} {% if user_has_role(g.user, Administrator) %}
+          <span class="tag is-danger mr-3">Administrator</span>
+          {% elif user_has_role(g.user, Moderator) %}
+          <span class="tag is-warning mr-3">Moderator</span>
+          {% endif %}
           <form action="{{ url_for('user.logout') }}" method="post">
-            {{ logout_form.hidden_tag() }}
-            {{ logout_form.submit(class="button is-light") }}
+            {{ logout_form.hidden_tag() }} {{ logout_form.submit(class="button
+            is-light") }}
           </form>
           {% else %}
           <div class="buttons">
