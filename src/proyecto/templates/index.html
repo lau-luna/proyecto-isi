@@ -1,12 +1,28 @@
-{% extends "base.html" %} {% block content %} {% if person %}
+{% extends "base.html" %}
+
+{% block content %}
+{% if person %}
 <h1 class="title">Hello {{ person }}!</h1>
 {% else %}
 <h1 class="title">Hello world!</h1>
 {% endif %}
 
 <md-block>
-  ## Hola - item1 - item2 - item3 ```java public class Main { public static int
-  suma(int a, int b) { return a + b; } public static void main(String[] args) {
-  System.out.println(suma(1+2)); } } ```
+  ## Hola
+  - item1
+  - item2
+  - item3
+
+  ```java
+  public class Main {
+    public static int suma(int a, int b) {
+      return a + b;
+    }
+
+    public static void main(String[] args) {
+      System.out.println(suma(1+2));
+    }
+  }
+  ```
 </md-block>
 {% endblock %}
