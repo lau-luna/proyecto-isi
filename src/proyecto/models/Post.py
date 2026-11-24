@@ -22,6 +22,9 @@ class Post(db.Model):
         "polymorphic_on": type,
     }
 
+    def __init__(self, body: str) -> None:
+        self.body = body
+
     # TODO: implement
     def upvote(self, User):
         pass
