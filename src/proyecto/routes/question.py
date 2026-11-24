@@ -29,6 +29,9 @@ def post_question():
         body = form.body.data.strip()
         tags = (form.tags.data or "").strip()
 
+        category = form.category.data
+
+        # tags processing
         split_tags = tags.lower().split(" ")
         tags = []
 
@@ -40,7 +43,13 @@ def post_question():
             tags.append(db_tag)
         db.session.commit()
 
-        question = Question(title, body, session["user_id"], tags)
+        question = Question(
+            title=title,
+            category_id=category,
+            body=body,
+            user_id=session["user_id"],
+            tags=tags,
+        )
         db.session.add(question)
         db.session.commit()
 
