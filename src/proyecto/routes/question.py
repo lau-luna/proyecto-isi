@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template, session, url_for
+from flask import Blueprint, redirect, render_template, request, session, url_for
 from sqlalchemy import select
 
 from proyecto.extensions import db
@@ -63,4 +63,34 @@ def post_question():
             logout_form=LogOutForm(),
         ),
         400 if form.is_submitted() else 200,
+    )
+
+
+@bp.route("/questions", methods=["GET"])
+def list_questions():
+    # Invalid or missing values become None, so they simply do not filter.
+    category_id = request.args.get("category", type=int)
+    tag_name = request.args.get("tag", default="").strip()
+
+    questions = Question.find_all(category_id=category_id, tag_name=tag_name)
+    categories = db.session.scalars(select(Category).order_by(Category.name)).all()
+
+    return render_template(
+        "question/list.html",
+        questions=questions,
+        categories=categories,
+        selected_category_id=category_id,
+        selected_tag=tag_name,
+        logout_form=LogOutForm(),
+    )
+
+
+@bp.route("/questions/<int:question_id>", methods=["GET"])
+def question_detail(question_id):
+    question = db.get_or_404(Question, question_id)
+
+    return render_template(
+        "question/detail.html",
+        question=question,
+        logout_form=LogOutForm(),
     )

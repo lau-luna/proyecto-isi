@@ -1,0 +1,23 @@
+{# Shows the author, category, tags and publication date of a question. #}
+{% macro question_meta(question) %}
+<div class="is-flex is-flex-wrap-wrap is-align-items-center">
+  <span class="mr-3">
+    Asked by <strong>{{ question.author.get_display_name() }}</strong>
+    on {{ question.published_at.strftime("%Y-%m-%d %H:%M") }}
+  </span>
+  <a
+    class="tag is-info is-light mr-2"
+    href="{{ url_for('question.list_questions', category=question.category_id) }}"
+  >
+    {{ question.category.name }}
+  </a>
+  {% for tag in question.tags %}
+  <a
+    class="tag is-light mr-1"
+    href="{{ url_for('question.list_questions', tag=tag.name) }}"
+  >
+    #{{ tag.name }}
+  </a>
+  {% endfor %}
+</div>
+{% endmacro %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "question/_question_meta.html" import question_meta %}
+
+{% block title %}{{ question.title }}{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('question.list_questions') }}">&larr; Back to questions</a>
+
+<h1 class="title mt-4">{{ question.title }}</h1>
+{{ question_meta(question) }}
+
+<div class="box mt-4">
+  <md-block>{{ question.body }}</md-block>
+</div>
+
+{# Answers are added by issue #8 (Answer model); this section lists them. #}
+<h2 class="title is-4 mt-5">Answers</h2>
+<p class="has-text-grey">No answers yet.</p>
+{% endblock %}
