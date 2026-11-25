@@ -1,78 +1,196 @@
-{% extends "base.html" %}
+{% extends "base.html" %} {% block title %}Create post{% endblock %} {% block
+head %}
+<style>
+  .tag-outline {
+    background: transparent;
+    border: 1px solid currentColor;
+  }
+  #body-editor {
+    height: 50vh;
+    border: 1px solid var(--bulma-border, #dbdbdb);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  #body-editor.is-danger {
+    border-color: var(--bulma-danger, #f14668);
+  }
 
-{% block title %}Ask a question{% endblock %}
+  #body-editor .overtype-container {
+    height: 100% !important;
+    display: flex;
+    flex-direction: column;
+  }
 
-{% block content %}
-<h1 class="title">Ask a question</h1>
+  #body-editor .overtype-wrapper {
+    flex: 1 1 auto !important;
+    height: auto !important;
+    min-height: 0;
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="columns is-centered">
+  <div class="column is-8-desktop is-10-tablet">
+    {% set selected = form.category.choices | selectattr(0, "equalto",
+    form.category.data) | map(attribute=1) | first %}
 
-<form
-  class="box"
-  action="{{ url_for('question.post_question') }}"
-  method="post"
-  novalidate
->
-  {{ form.hidden_tag() }}
+    <div class="is-flex is-align-items-center mb-4">
+      <h1 class="title is-3 mb-0 mr-3">Create post</h1>
 
-  <div class="field">
-    {{ form.title.label(class="label") }}
-    <div class="control">
-      {{ form.title(
-        class="input" + (" is-danger" if form.title.errors else ""),
-        placeholder="The title of your question"
-      ) }}
+      {% if form.category.data and selected %}
+      <span class="tag is-medium is-rounded tag-outline">
+        <span class="icon has-text-primary">
+          <i class="fa-solid fa-layer-group"></i>
+        </span>
+        <span>Posting in <strong class="ml-1">{{ selected }}</strong></span>
+      </span>
+      {% endif %}
     </div>
-    {% for error in form.title.errors %}
-    <p class="help is-danger">{{ error }}</p>
-    {% endfor %}
-  </div>
 
-  <div class="field">
-    {{ form.category.label(class="label") }}
-    <div class="control">
-      <div class="select is-fullwidth">
-        {{ form.category }}
+    <form
+      id="question-form"
+      class="box p-5"
+      action="{{ url_for('question.post_question') }}"
+      method="post"
+      novalidate
+    >
+      {{ form.hidden_tag() }}
+
+      <!-- Category -->
+      <div class="field">
+        <div class="control has-icons-left">
+          <div
+            class="select is-fullwidth{{ ' is-danger' if form.category.errors }}"
+          >
+            {{ form.category(id="category-select") }}
+          </div>
+          <span class="icon is-left has-text-primary">
+            <i class="fa-solid fa-layer-group"></i>
+          </span>
+        </div>
+        {% for error in form.category.errors %}
+        <p class="help is-danger">{{ error }}</p>
+        {% endfor %}
       </div>
-    </div>
-    {% for error in form.category.errors %}
-    <p class="help is-danger">{{ error }}</p>
-    {% endfor %}
-  </div>
 
-  <div class="field">
-    {{ form.body.label(class="label") }}
-    <div class="control">
-      {{ form.body(
-        class="textarea" + (" is-danger" if form.body.errors else ""),
-        rows=10,
-        placeholder="Describe your question here (Markdown supported)"
-      ) }}
-    </div>
-    {% for error in form.body.errors %}
-    <p class="help is-danger">{{ error }}</p>
-    {% endfor %}
-  </div>
+      <hr class="my-4" />
 
-  <div class="field">
-    {{ form.tags.label(class="label") }}
-    <div class="control">
-      {{ form.tags(
-        class="input" + (" is-danger" if form.tags.errors else ""),
-        placeholder="coding functional-programming haskell",
-        aria_describedby="tags-help"
-      ) }}
-    </div>
-    <p id="tags-help" class="help">
-      Separate tags with spaces. Use hyphens for multi-word tags.
-    </p>
-    {% for error in form.tags.errors %}
-    <p class="help is-danger">{{ error }}</p>
-    {% endfor %}
-  </div>
+      <!-- Title -->
+      <div class="field">
+        <div class="control">
+          {{ form.title( class="input" + (" is-danger" if form.title.errors else
+          ""), placeholder="Title", maxlength=300, id="title-input" ) }}
+        </div>
+        <p class="help has-text-right"><span id="title-count">0</span>/300</p>
+        {% for error in form.title.errors %}
+        <p class="help is-danger">{{ error }}</p>
+        {% endfor %}
+      </div>
 
-  <br>
+      <!-- Body (OverType crea su propio <textarea name="body">) -->
+      <div class="field">
+        <div class="control">
+          <div
+            id="body-editor"
+            {%
+            if
+            form.body.errors
+            %}
+            class="is-danger"
+            {%
+            endif
+            %}
+          ></div>
+        </div>
+        {% for error in form.body.errors %}
+        <p class="help is-danger">{{ error }}</p>
+        {% endfor %}
+      </div>
 
-  <div class="field is-centered">
-    {{ form.submit(class="button is-link") }}
+      <!-- Tags -->
+      <div class="field">
+        <div class="control has-icons-left">
+          {{ form.tags( class="input" + (" is-danger" if form.tags.errors else
+          ""), placeholder="Add tags: haskell functional-programming",
+          aria_describedby="tags-help", id="tags-input" ) }}
+          <span class="icon is-left"><i class="fa-solid fa-tags"></i></span>
+        </div>
+        <p id="tags-help" class="help">
+          Separate tags with spaces. Use hyphens for multi-word tags.
+        </p>
+        {% for error in form.tags.errors %}
+        <p class="help is-danger">{{ error }}</p>
+        {% endfor %}
+      </div>
+
+      <!-- Actions -->
+      <div class="field is-grouped is-grouped-right mt-5">
+        <div class="control">
+          <a
+            class="button is-light is-rounded"
+            href="{{ url_for('index.index') }}"
+          >
+            Cancel
+          </a>
+        </div>
+        <div class="control">
+          {{ form.submit(class="button is-link is-rounded px-5", value="Post")
+          }}
+        </div>
+      </div>
+    </form>
   </div>
-</form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/overtype@2.3.4/dist/overtype.min.js"></script>
+<script>
+    const titleInput = document.getElementById("title-input");
+    const titleCount = document.getElementById("title-count");
+    const tagsInput = document.getElementById("tags-input");
+    const categorySelect = document.getElementById("category-select");
+
+    const updateCount = () => (titleCount.textContent = titleInput.value.length);
+    titleInput.addEventListener("input", updateCount);
+
+    // --- Editor markdown (OverType) ---
+    const [bodyEditor] = new OverType("#body-editor", {
+    value: {{ (form.body.data or "") | tojson }},
+    placeholder: "Body (Markdown supported)",
+    toolbar: true,
+    theme: "cave",
+    textareaProps: { name: "{{ form.body.name }}" },
+  });
+
+    // --- Cambiar categoría => GET con ?category=, sin perder lo escrito ---
+    const DRAFT_KEY = "question-draft";
+
+    categorySelect.addEventListener("change", () => {
+      sessionStorage.setItem(
+        DRAFT_KEY,
+        JSON.stringify({
+          title: titleInput.value,
+          body: bodyEditor.getValue(),
+          tags: tagsInput.value,
+        })
+      );
+      const url = new URL(window.location.href);
+      url.searchParams.set("category", categorySelect.value);
+      window.location.href = url.toString();
+    });
+
+    // Restaurar el borrador solo si venimos de un cambio de categoría
+    try {
+      const raw = sessionStorage.getItem(DRAFT_KEY);
+      if (raw) {
+        const draft = JSON.parse(raw);
+        titleInput.value = draft.title || "";
+        tagsInput.value = draft.tags || "";
+        bodyEditor.setValue(draft.body || "");
+      }
+    } catch (_) {
+      /* sessionStorage no disponible: no pasa nada */
+    }
+    sessionStorage.removeItem(DRAFT_KEY);
+
+    updateCount();
+</script>
 {% endblock %}

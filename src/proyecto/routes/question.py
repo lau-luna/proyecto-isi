@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template, session, url_for
+from flask import Blueprint, redirect, render_template, request, session, url_for
 from sqlalchemy import select
 
 from proyecto.extensions import db
@@ -23,6 +23,12 @@ def post_question():
             select(Category).order_by(Category.name)
         ).all()
     ]
+
+    if request.method == "GET":
+        preselected = request.args.get("category", type=int)
+        valid_ids = {id for id, _ in form.category.choices}
+        if preselected in valid_ids:
+            form.category.data = preselected
 
     if form.validate_on_submit():
         title = form.title.data.strip()
@@ -54,7 +60,7 @@ def post_question():
         db.session.commit()
 
         # TODO: redirect to the question link using the new id
-        return redirect(url_for("index"))
+        return redirect(url_for("index.index"))
 
     return (
         render_template(
@@ -63,4 +69,17 @@ def post_question():
             logout_form=LogOutForm(),
         ),
         400 if form.is_submitted() else 200,
+    )
+
+
+@bp.route("/questions", methods=["GET"])
+def questions():
+    categories = db.session.scalars(select(Category)).all()
+    latest_questions = db.session.scalars(select(Question).join(Category).limit(10))
+
+    return render_template(
+        "question/questions.html",
+        categories=categories,
+        latest_questions=latest_questions,
+        logout_form=LogOutForm(),
     )

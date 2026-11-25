@@ -10,7 +10,7 @@ class Category(db.Model):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(30))
-    questions: Mapped[list[Question]] = relationship()
+    questions: Mapped[list[Question]] = relationship(back_populates="category")
 
     def __init__(self, name: str) -> None:
         self.name = name
