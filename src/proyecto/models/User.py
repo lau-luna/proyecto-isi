@@ -39,7 +39,7 @@ class User(db.Model):
     role: Mapped[str] = mapped_column(
         String(20), nullable=False, server_default="regular_user"
     )
-    questions: Mapped[list[Question]] = relationship()
+    questions: Mapped[list[Question]] = relationship(back_populates="author")
 
     __mapper_args__ = {
         # When loading a row, SQLAlchemy reads "role" to decide which
