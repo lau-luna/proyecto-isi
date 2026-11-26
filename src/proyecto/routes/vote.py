@@ -1,4 +1,7 @@
+import re
+
 from flask import Blueprint, abort, g, redirect, request, url_for
+from sqlalchemy.exc import IntegrityError
 
 from proyecto.extensions import db
 from proyecto.models.Answer import Answer
@@ -7,6 +10,11 @@ from proyecto.models.Question import Question
 from proyecto.routes.user import login_required
 
 bp = Blueprint("vote", __name__)
+
+# A same-site path: starts with a single "/" and only has ordinary URL
+# characters. Backslashes, spaces and control characters (e.g. a tab, which
+# browsers drop, turning "/\t/evil.com" into "//evil.com") are rejected.
+SAFE_NEXT_PATH = re.compile(r"/(?!/)[A-Za-z0-9/_.~%?=&+-]*")
 
 
 def find_votable_post(post_id: int) -> Question | Answer:
@@ -21,10 +29,19 @@ def redirect_back(post: Question | Answer):
     """Go back to the page the vote came from, or to the question."""
     next_url = request.form.get("next", "")
     # Only same-site paths, to avoid redirecting to another website.
-    if next_url.startswith("/") and not next_url.startswith("//"):
+    if SAFE_NEXT_PATH.fullmatch(next_url):
         return redirect(next_url)
     question = post if isinstance(post, Question) else post.question
     return redirect(url_for("question.question_detail", question_id=question.id))
+
+
+def save_vote() -> None:
+    try:
+        db.session.commit()
+    except IntegrityError:
+        # Two requests of the same user raced and the database kept only one
+        # vote (one vote per user and post). Nothing else to do.
+        db.session.rollback()
 
 
 @bp.route("/posts/<int:post_id>/upvote", methods=["POST"])
@@ -32,7 +49,7 @@ def redirect_back(post: Question | Answer):
 def upvote(post_id):
     post = find_votable_post(post_id)
     post.upvote(g.user)
-    db.session.commit()
+    save_vote()
     return redirect_back(post)
 
 
@@ -41,5 +58,5 @@ def upvote(post_id):
 def downvote(post_id):
     post = find_votable_post(post_id)
     post.downvote(g.user)
-    db.session.commit()
+    save_vote()
     return redirect_back(post)

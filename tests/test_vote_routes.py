@@ -1,3 +1,4 @@
+import pytest
 from sqlalchemy import select
 from test_answer import create_question
 from test_answer_routes import login
@@ -135,3 +136,39 @@ def test_the_user_vote_is_highlighted_and_next_points_to_the_page(client, sessio
     assert b'is-primary"\n      aria-label="Upvote"' in detail
     assert f'name="next" value="/questions/{question.id}?"'.encode() in detail
     assert b'is-primary"\n      aria-label="Upvote"' in listing
+
+
+@pytest.mark.parametrize(
+    "next_url",
+    [
+        "https://evil.example.com",
+        "//evil.example.com",
+        "/\t/evil.example.com",
+        "/\\evil.example.com",
+        "\\\\evil.example.com",
+        "/questions\n/x",
+    ],
+)
+def test_next_urls_that_could_leave_the_site_are_ignored(client, session, next_url):
+    question = setup_question(session)
+    login(client)
+
+    response = client.post(f"/posts/{question.id}/upvote", data={"next": next_url})
+
+    assert response.headers["Location"] == f"/questions/{question.id}"
+
+
+def test_a_concurrent_duplicate_vote_does_not_crash(client, session, monkeypatch):
+    # Simulates two requests of the same user racing: the second one does not
+    # see the first vote and the database unique constraint rejects it.
+    from proyecto.models.Post import Post
+
+    question = setup_question(session)
+    login(client, email="juan@example.com")
+    client.post(f"/posts/{question.id}/upvote")
+    monkeypatch.setattr(Post, "_find_vote", lambda self, user: None)
+
+    response = client.post(f"/posts/{question.id}/upvote")
+
+    assert response.status_code == 302
+    assert len(session.scalars(select(Vote)).all()) == 1
