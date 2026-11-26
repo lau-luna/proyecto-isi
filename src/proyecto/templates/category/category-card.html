@@ -4,22 +4,16 @@
       <span class="icon has-text-primary mb-2">
         <i class="fa-solid fa-layer-group fa-lg"></i>
       </span>
-      <p class="title is-6">{{ category.name }}</p>
-      <div class="level mt-3">
-        <div class="level-item has-text-centered">
-          <div>
-            <p class="heading has-text-grey">Questions</p>
-            <p class="title is-6 has-text-primary">#n</p>
-          </div>
-        </div>
-        <div class="level-item has-text-centered">
-          <div>
-            <p class="heading has-text-grey">Answers</p>
-            <p class="title is-6 has-text-primary">#n</p>
-          </div>
-        </div>
+      <p class="title is-6 has-text-white mb-3">{{ category.name }}</p>
+      <div class="is-flex is-justify-content-center is-size-7 has-text-grey">
+        {# TODO: Replace the placeholders with question and answer count queries. #}
+        <span class="mx-2" title="Questions">
+          <i class="fa-regular fa-circle-question"></i> #n
+        </span>
+        <span class="mx-2" title="Answers">
+          <i class="fa-regular fa-comment"></i> #n
+        </span>
       </div>
     </div>
   </a>
-  {# TODO: Replace the placeholders with question and answer count queries. #}
 </div>
