@@ -107,7 +107,9 @@ def test_detail_shows_answer_form_only_when_logged_in(client, session):
     login(client)
     logged_in = client.get(f"/questions/{question.id}")
 
-    assert b'name="body"' not in anonymous.data
+    # The body textarea is created by the OverType editor in the browser.
+    assert b'id="answer-editor"' not in anonymous.data
     assert b"Log in to answer" in anonymous.data
-    assert b'name="body"' in logged_in.data
+    assert b'id="answer-editor"' in logged_in.data
+    assert b'textareaProps: { name: "body" }' in logged_in.data
     assert f'action="/questions/{question.id}/answers"'.encode() in logged_in.data

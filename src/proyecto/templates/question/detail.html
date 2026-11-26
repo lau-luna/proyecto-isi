@@ -1,6 +1,20 @@
 {% extends "base.html" %} {% from "question/_question_meta.html" import
 question_meta, question_tags, question_actions %} {% block title %}{{
-question.title }}{% endblock %} {% block content %}
+question.title }}{% endblock %} {% block head %}
+<style>
+  /* Make the editor look like a Bulma input (same as the question form). */
+  #answer-editor {
+    height: 250px; /* fixed height: OverType fills the container */
+    border: 1px solid var(--bulma-border, #dbdbdb);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  #answer-editor.is-danger {
+    border-color: var(--bulma-danger, #f14668);
+  }
+</style>
+{% endblock %}
+{% block content %}
 <a class="is-inline-block mb-4" href="{{ url_for('question.questions') }}">
   <span class="icon-text">
     <span class="icon"><i class="fa-solid fa-arrow-left"></i></span>
@@ -47,11 +61,13 @@ question.title }}{% endblock %} {% block content %}
   action="{{ url_for('question.answer_question', question_id=question.id) }}"
 >
   {{ answer_form.hidden_tag() }}
+  <!-- OverType creates its own <textarea name="body"> -->
   <div class="field">
     <div class="control">
-      {{ answer_form.body(class="textarea" + (" is-danger" if
-      answer_form.body.errors else ""), rows=5, placeholder="Write your answer")
-      }}
+      <div
+        id="answer-editor"
+        class="{{ 'is-danger' if answer_form.body.errors else '' }}"
+      ></div>
     </div>
     {% for error in answer_form.body.errors %}
     <p class="help is-danger">{{ error }}</p>
@@ -59,6 +75,18 @@ question.title }}{% endblock %} {% block content %}
   </div>
   {{ answer_form.submit(class="button is-link is-rounded px-5") }}
 </form>
+
+<script src="https://cdn.jsdelivr.net/npm/overtype@2.3.4/dist/overtype.min.js"></script>
+<script>
+  // Same Markdown editor as the "create question" form.
+  new OverType("#answer-editor", {
+    value: {{ (answer_form.body.data or "") | tojson }},
+    placeholder: "Write your answer (Markdown supported)",
+    toolbar: true,
+    theme: "cave",
+    textareaProps: { name: "{{ answer_form.body.name }}" },
+  });
+</script>
 {% else %}
 <p>
   <a href="{{ url_for('user.login') }}">Log in to answer</a> this question.
