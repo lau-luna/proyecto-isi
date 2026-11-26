@@ -9,6 +9,10 @@ question.title }}{% endblock %} {% block head %}
     border-radius: 4px;
     overflow: hidden;
   }
+  /* Replies hang under their answer with a left line. */
+  .reply {
+    border-left: 2px solid var(--bulma-border, #dbdbdb);
+  }
   #answer-editor.is-danger {
     border-color: var(--bulma-danger, #f14668);
   }
@@ -47,6 +51,48 @@ question.title }}{% endblock %} {% block head %}
   <div class="content">
     <md-block>{{ answer.body }}</md-block>
   </div>
+
+  {# Replies: one level only, a reply cannot be replied to. #}
+  {% for reply in answer.replies %}
+  <div class="reply ml-5 pl-4 py-2">
+    <p class="help mt-0 mb-1">
+      <i class="fa-regular fa-user"></i>
+      <span>{{ reply.author.get_display_name() }}</span>
+      • {{ reply.published_at.strftime("%Y-%m-%d %H:%M") }}
+    </p>
+    <div class="content is-small">
+      <md-block>{{ reply.body }}</md-block>
+    </div>
+  </div>
+  {% endfor %}
+
+  {% if g.user %}
+  {% set has_errors = reply_answer_id == answer.id %}
+  <details class="ml-5 mt-3" {{ "open" if has_errors else "" }}>
+    <summary class="is-size-7 has-text-link is-clickable">Reply</summary>
+    <form
+      class="mt-2"
+      method="post"
+      action="{{ url_for('question.reply_to_answer', answer_id=answer.id) }}"
+    >
+      {{ reply_form.hidden_tag() }}
+      <div class="field">
+        <div class="control">
+          <textarea
+            class="textarea is-small{{ ' is-danger' if has_errors else '' }}"
+            name="{{ reply_form.body.name }}"
+            rows="2"
+            placeholder="Write a reply"
+          >{{ reply_form.body.data or "" if has_errors else "" }}</textarea>
+        </div>
+        {% if has_errors %} {% for error in reply_form.body.errors %}
+        <p class="help is-danger">{{ error }}</p>
+        {% endfor %} {% endif %}
+      </div>
+      {{ reply_form.submit(class="button is-link is-small is-rounded") }}
+    </form>
+  </details>
+  {% endif %}
 </div>
 {% else %}
 <div class="box">

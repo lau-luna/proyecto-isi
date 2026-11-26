@@ -13,5 +13,6 @@ from proyecto.models import Post as Post
 from proyecto.models import Question as Question
 from proyecto.models import QuestionTag as QuestionTag
 from proyecto.models import RegularUser as RegularUser
+from proyecto.models import Reply as Reply
 from proyecto.models import Tag as Tag
 from proyecto.models import User as User
