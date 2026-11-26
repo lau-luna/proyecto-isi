@@ -97,7 +97,7 @@ def post_question():
 def questions():
     search = request.args.get("q", default="").strip()
 
-    query = select(Question).order_by(Question.published_at.desc())
+    query = select(Question).order_by(*Question.sort_order())
     if search:
         # Case-insensitive match on the question title or body.
         pattern = f"%{search}%"

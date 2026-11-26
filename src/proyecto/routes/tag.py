@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, render_template, request
 from sqlalchemy import select
 
 from proyecto.extensions import db
-from proyecto.models.Question import Question
+from proyecto.models.Question import SORT_OPTIONS, Question
 from proyecto.models.Tag import Tag
 from proyecto.utils.index_forms import LogOutForm
 
@@ -23,16 +23,20 @@ def tag(id):
     logout_form = LogOutForm()
 
     tag = db.session.scalar(select(Tag).where(Tag.id == id))
+    sort = request.args.get("sort", "score")
+    if sort not in SORT_OPTIONS:
+        sort = "score"
     questions_by_tag = db.session.scalars(
         select(Question)
         .where(Question.tags.any(Tag.id == id))
-        .order_by(Question.published_at.desc())
+        .order_by(*Question.sort_order(sort))
     ).all()
 
     return render_template(
         "tag/tag.html",
         tag=tag,
         questions_by_tag=questions_by_tag,
+        sort=sort,
         logout_form=logout_form,
     )
 
