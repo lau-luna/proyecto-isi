@@ -80,11 +80,13 @@ class Question {
   - title : String
   + addAnswer(body : String, factory : AuthorFactory) : Answer
   + acceptAnswer(r : Answer, requester : User) : void
+  + unacceptAnswer(r : Answer, requester : User) : void
 }
 
 class Answer {
   - accepted : boolean
   + markAsAccepted() : void
+  + unmarkAsAccepted() : void
   + addReply(body : String, factory : AuthorFactory) : Reply
 }
 
@@ -175,7 +177,7 @@ Answer -[hidden]right- Vote
 ' =========================================================
 legend bottom
   |= Element |= Design decisions and business rules |
-  | **Question** | Only a human User can create a Question.\nOnly the author of the Question can accept answers (acceptAnswer receives the requester).\nThere can be several accepted answers.\nBelongs to one Category and has 0..* Tags.\naddAnswer() receives an AuthorFactory, gets the Author with createAuthor() and creates the Answer;\nQuestion does not know whether the author is human or AI. |
+  | **Question** | Only a human User can create a Question.\nOnly the author of the Question can accept answers or remove their acceptance (acceptAnswer / unacceptAnswer receive the requester).\nThere can be several accepted answers.\nBelongs to one Category and has 0..* Tags.\naddAnswer() receives an AuthorFactory, gets the Author with createAuthor() and creates the Answer;\nQuestion does not know whether the author is human or AI. |
   | **Answer** | Only knows the Author interface: it is agnostic to whether a human or an AIAgent wrote it. |
   | **Reply** | A reply to an Answer, created with Answer.addReply(body, factory) (same Factory Method as answers).\nOnly one level: a Reply cannot be replied to. Replies are not answers of the Question and cannot be accepted.\nOnly knows the Author interface. |
   | **Post / Vote** | Only a registered User can cast votes.\nVote is a separate class: a User can cast only one Vote per Post.\nscore is derived (sum of the Vote values, +1 / -1). |

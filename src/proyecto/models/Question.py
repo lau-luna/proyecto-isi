@@ -49,3 +49,22 @@ class Question(Post):
         answer = Answer(body=body, author=author)
         self.answers.append(answer)
         return answer
+
+    def accept_answer(self, answer: Answer, requester: User) -> None:
+        """Mark an answer as accepted. Only the question author can do it.
+
+        A question can have several accepted answers.
+        """
+        self._check_can_change_acceptance(answer, requester)
+        answer.mark_as_accepted()
+
+    def unaccept_answer(self, answer: Answer, requester: User) -> None:
+        """Remove the acceptance of an answer, with the same rules as accepting."""
+        self._check_can_change_acceptance(answer, requester)
+        answer.unmark_as_accepted()
+
+    def _check_can_change_acceptance(self, answer: Answer, requester: User) -> None:
+        if answer.question is not self:
+            raise ValueError("The answer does not belong to this question")
+        if requester.id != self.user_id:
+            raise PermissionError("Only the question author can accept answers")

@@ -1,4 +1,13 @@
-from flask import Blueprint, g, redirect, render_template, request, session, url_for
+from flask import (
+    Blueprint,
+    abort,
+    g,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
 from sqlalchemy import select
 
 from proyecto.extensions import db
@@ -8,6 +17,7 @@ from proyecto.models.HumanAuthorFactory import HumanAuthorFactory
 from proyecto.models.Question import Question
 from proyecto.models.Tag import Tag
 from proyecto.routes.user import login_required
+from proyecto.utils.accept_forms import AcceptAnswerForm
 from proyecto.utils.answer_forms import AnswerForm
 from proyecto.utils.index_forms import LogOutForm
 from proyecto.utils.question_forms import AddQuestionForm
@@ -114,6 +124,7 @@ def question_detail(question_id):
         question=question,
         answer_form=AnswerForm(),
         reply_form=ReplyForm(),
+        accept_form=AcceptAnswerForm(),
         logout_form=LogOutForm(),
     )
 
@@ -136,6 +147,7 @@ def answer_question(question_id):
             question=question,
             answer_form=form,
             reply_form=ReplyForm(),
+            accept_form=AcceptAnswerForm(),
             logout_form=LogOutForm(),
         ),
         400,
@@ -162,7 +174,46 @@ def reply_to_answer(answer_id):
             reply_form=form,
             # Tells the template which answer's reply form has the errors.
             reply_answer_id=answer.id,
+            accept_form=AcceptAnswerForm(),
             logout_form=LogOutForm(),
         ),
         400,
     )
+
+
+@bp.route("/answers/<int:answer_id>/accept", methods=["POST"])
+@login_required
+def accept_answer(answer_id):
+    answer = db.get_or_404(Answer, answer_id)
+    question = answer.question
+
+    if not AcceptAnswerForm().validate_on_submit():
+        abort(400)
+
+    try:
+        question.accept_answer(answer, g.user)
+    except PermissionError:
+        # Only the question author can accept answers.
+        abort(403)
+
+    db.session.commit()
+    return redirect(url_for("question.question_detail", question_id=question.id))
+
+
+@bp.route("/answers/<int:answer_id>/unaccept", methods=["POST"])
+@login_required
+def unaccept_answer(answer_id):
+    answer = db.get_or_404(Answer, answer_id)
+    question = answer.question
+
+    if not AcceptAnswerForm().validate_on_submit():
+        abort(400)
+
+    try:
+        question.unaccept_answer(answer, g.user)
+    except PermissionError:
+        # Only the question author can remove the acceptance.
+        abort(403)
+
+    db.session.commit()
+    return redirect(url_for("question.question_detail", question_id=question.id))

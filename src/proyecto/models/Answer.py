@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import Boolean, ForeignKey, false
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from proyecto.models.AuthorRecord import AuthorRecord
@@ -25,6 +25,10 @@ class Answer(Post):
     )
     author_id: Mapped[int] = mapped_column(ForeignKey("author.id"), nullable=False)
     author_record: Mapped[AuthorRecord] = relationship()
+    # An answer starts as not accepted; only the question author accepts it.
+    accepted: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False, server_default=false()
+    )
     replies: Mapped[list[Reply]] = relationship(
         back_populates="answer",
         foreign_keys="Reply.answer_id",
@@ -36,6 +40,12 @@ class Answer(Post):
     def __init__(self, body: str, author: Author) -> None:
         super().__init__(body)
         self.author_record = author.author_record
+
+    def mark_as_accepted(self) -> None:
+        self.accepted = True
+
+    def unmark_as_accepted(self) -> None:
+        self.accepted = False
 
     @property
     def author(self) -> Author:
