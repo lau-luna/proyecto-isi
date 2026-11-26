@@ -81,7 +81,7 @@ def test_login_success_cookie_and_session_persistence(client, session):
     home_response = client.get("/")
     assert home_response.status_code == 200
     assert b"cata" in home_response.data
-    assert b"Log out" in home_response.data
+    assert b"Log Out" in home_response.data
 
 
 @pytest.mark.parametrize(
@@ -123,7 +123,7 @@ def test_logout_clears_session(client, session):
 
     home_response = client.get("/")
     assert b"Log in" in home_response.data
-    assert b"Log out" not in home_response.data
+    assert b"Log Out" not in home_response.data
 
 
 def test_login_required_redirects_anonymous_user(client):

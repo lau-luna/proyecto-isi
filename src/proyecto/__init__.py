@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, g, render_template, session
+from flask import Flask, g, session
 from flask_wtf.csrf import CSRFProtect
 
 from proyecto.auth import user_has_role

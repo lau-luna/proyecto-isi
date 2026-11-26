@@ -35,13 +35,13 @@ def test_question_form_renders(client, session):
     response = client.get("/question")
 
     assert response.status_code == 200
-    assert b"Ask a question" in response.data
+    assert b"Create post" in response.data
     assert b'name="title"' in response.data
     assert b'name="category"' in response.data
     assert b'name="body"' in response.data
     assert b'name="tags"' in response.data
-    assert b"Ask question" in response.data
-    assert b"Log out" in response.data
+    assert b'value="Post"' in response.data
+    assert b"Log Out" in response.data
 
 
 def test_posting_a_question_requires_category(client, session):
