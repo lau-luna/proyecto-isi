@@ -99,3 +99,73 @@ def test_add_answer_only_needs_an_author_factory(session):
 def test_author_factory_cannot_be_instantiated():
     with pytest.raises(TypeError):
         AuthorFactory()
+
+
+def test_answer_is_not_accepted_by_default(session):
+    user = create_test_user(session)
+    question = create_question(session, user)
+
+    answer = question.add_answer("Press :q", HumanAuthorFactory(user))
+    session.commit()
+
+    assert session.get(Answer, answer.id).accepted is False
+
+
+def test_question_author_can_accept_an_answer(session):
+    asker = create_test_user(session)
+    answerer = create_test_user(session, username="juan", email="juan@example.com")
+    question = create_question(session, asker)
+    answer = question.add_answer("Press :q", HumanAuthorFactory(answerer))
+    session.commit()
+
+    question.accept_answer(answer, asker)
+    session.commit()
+
+    assert session.get(Answer, answer.id).accepted is True
+
+
+def test_a_question_can_have_several_accepted_answers(session):
+    asker = create_test_user(session)
+    question = create_question(session, asker)
+    first = question.add_answer("Press :q", HumanAuthorFactory(asker))
+    second = question.add_answer("Press ZZ", HumanAuthorFactory(asker))
+    session.commit()
+
+    question.accept_answer(first, asker)
+    question.accept_answer(second, asker)
+
+    assert first.accepted is True
+    assert second.accepted is True
+
+
+def test_other_user_cannot_accept_an_answer(session):
+    asker = create_test_user(session)
+    other = create_test_user(session, username="juan", email="juan@example.com")
+    question = create_question(session, asker)
+    answer = question.add_answer("Press :q", HumanAuthorFactory(other))
+    session.commit()
+
+    with pytest.raises(PermissionError):
+        question.accept_answer(answer, other)
+
+    assert answer.accepted is False
+
+
+def test_cannot_accept_an_answer_of_another_question(session):
+    asker = create_test_user(session)
+    question = create_question(session, asker)
+    other_question = Question(
+        title="Other",
+        category_id=question.category_id,
+        body="Body",
+        user_id=asker.id,
+        tags=[],
+    )
+    session.add(other_question)
+    answer = other_question.add_answer("Hi", HumanAuthorFactory(asker))
+    session.commit()
+
+    with pytest.raises(ValueError):
+        question.accept_answer(answer, asker)
+
+    assert answer.accepted is False

@@ -8,6 +8,10 @@ question_post %} {% block title %}{{ question.title }}{% endblock %} {% block he
     border-radius: 4px;
     overflow: hidden;
   }
+  /* An answer marked as accepted gets a green border. */
+  .accepted-answer {
+    border: 2px solid var(--bulma-success, #48c78e);
+  }
   /* Replies hang under their answer with a left line. */
   .reply {
     border-left: 2px solid var(--bulma-border, #dbdbdb);
@@ -29,12 +33,32 @@ question_post %} {% block title %}{{ question.title }}{% endblock %} {% block he
 
 <h2 class="title is-4 mt-6 mb-4">Answers ({{ question.answers | length }})</h2>
 {% for answer in question.answers %}
-<div class="box">
-  <p class="help mt-0 mb-3">
-    <i class="fa-regular fa-user"></i>
-    <span>{{ answer.author.get_display_name() }}</span>
-    • {{ answer.published_at.strftime("%Y-%m-%d %H:%M") }}
-  </p>
+<div class="box{{ ' accepted-answer' if answer.accepted else '' }}">
+  <div class="is-flex is-justify-content-space-between is-align-items-start">
+    <p class="help mt-0 mb-3">
+      <i class="fa-regular fa-user"></i>
+      <span>{{ answer.author.get_display_name() }}</span>
+      • {{ answer.published_at.strftime("%Y-%m-%d %H:%M") }}
+    </p>
+    {% if answer.accepted %}
+    <span class="tag is-success">
+      <span class="icon"><i class="fa-solid fa-check"></i></span>
+      <span>Accepted answer</span>
+    </span>
+    {% elif g.user and g.user.id == question.user_id %}
+    {# Only the question author sees the accept button. #}
+    <form
+      method="post"
+      action="{{ url_for('question.accept_answer', answer_id=answer.id) }}"
+    >
+      {{ accept_form.hidden_tag() }}
+      <button type="submit" class="button is-success is-outlined is-small is-rounded">
+        <span class="icon"><i class="fa-solid fa-check"></i></span>
+        <span>Accept</span>
+      </button>
+    </form>
+    {% endif %}
+  </div>
   <div class="content">
     <md-block>{{ answer.body }}</md-block>
   </div>

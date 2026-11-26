@@ -49,3 +49,14 @@ class Question(Post):
         answer = Answer(body=body, author=author)
         self.answers.append(answer)
         return answer
+
+    def accept_answer(self, answer: Answer, requester: User) -> None:
+        """Mark an answer as accepted. Only the question author can do it.
+
+        A question can have several accepted answers.
+        """
+        if answer.question is not self:
+            raise ValueError("The answer does not belong to this question")
+        if requester.id != self.user_id:
+            raise PermissionError("Only the question author can accept answers")
+        answer.mark_as_accepted()
