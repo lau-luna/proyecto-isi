@@ -22,9 +22,46 @@ question.title }}{% endblock %} {% block content %}
   {{ question_actions(question) }}
 </div>
 
-{# Answers are added by issue #8 (Answer model); this section lists them. #}
-<h2 class="title is-4 mt-6 mb-4">Answers</h2>
+<h2 class="title is-4 mt-6 mb-4">Answers ({{ question.answers | length }})</h2>
+{% for answer in question.answers %}
+<div class="box">
+  <p class="help mt-0 mb-3">
+    <i class="fa-regular fa-user"></i>
+    <span>{{ answer.author.get_display_name() }}</span>
+    • {{ answer.published_at.strftime("%Y-%m-%d %H:%M") }}
+  </p>
+  <div class="content">
+    <md-block>{{ answer.body }}</md-block>
+  </div>
+</div>
+{% else %}
 <div class="box">
   <p class="has-text-grey has-text-centered">No answers yet.</p>
 </div>
+{% endfor %}
+
+<h2 class="title is-5 mt-6 mb-3">Your answer</h2>
+{% if g.user %}
+<form
+  method="post"
+  action="{{ url_for('question.answer_question', question_id=question.id) }}"
+>
+  {{ answer_form.hidden_tag() }}
+  <div class="field">
+    <div class="control">
+      {{ answer_form.body(class="textarea" + (" is-danger" if
+      answer_form.body.errors else ""), rows=5, placeholder="Write your answer")
+      }}
+    </div>
+    {% for error in answer_form.body.errors %}
+    <p class="help is-danger">{{ error }}</p>
+    {% endfor %}
+  </div>
+  {{ answer_form.submit(class="button is-link is-rounded px-5") }}
+</form>
+{% else %}
+<p>
+  <a href="{{ url_for('user.login') }}">Log in to answer</a> this question.
+</p>
+{% endif %}
 {% endblock %}
