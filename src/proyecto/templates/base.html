@@ -21,6 +21,17 @@
     <style>
       /* The whole question card opens the question: the title link is
          stretched over the card, while inner links and buttons stay on top. */
+      /* Both navbar sides share the free space equally, so the search box
+         stays centered regardless of what each side contains. */
+      .navbar-side {
+        flex: 1 1 0;
+      }
+      .navbar-search {
+        flex: 0 1 42rem;
+      }
+      .navbar-search form {
+        width: 100%;
+      }
       .question-card {
         position: relative;
       }
@@ -39,7 +50,7 @@
   </head>
   <body>
     <nav class="navbar" role="navigation" aria-label="main navigation">
-      <div class="navbar-brand is-flex-grow-1">
+      <div class="navbar-brand navbar-side">
         <a
           class="navbar-item title is-3 mb-0"
           href="{{ url_for('index.index') }}"
@@ -48,10 +59,10 @@
         </a>
       </div>
 
-      <div class="navbar-item is-expanded is-fullwidth">
+      <div class="navbar-item navbar-search">
         <form class="control has-icons-left is-expanded" action="/questions" method="get">
           <input
-            class="input is-rounded"
+            class="input is-rounded is-medium"
             type="search"
             name="q"
             placeholder="Search questions"
@@ -64,7 +75,7 @@
         </form>
       </div>
 
-      <div class="navbar-end is-flex-grow-1 is-justify-content-flex-end">
+      <div class="navbar-end navbar-side is-justify-content-flex-end">
         <div class="navbar-item">
           {% if g.user %}
           <span class="mr-3">
