@@ -62,8 +62,7 @@
         <span class="icon">
           <i class="fa-regular fa-comment"></i>
         </span>
-        {# TODO: get number of answers #}
-        <span>#n</span>
+        <span>{{ question.answers | length }}</span>
       </span>
     </button>
     <button class="button is-rounded">
