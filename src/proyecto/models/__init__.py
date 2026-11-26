@@ -5,6 +5,8 @@ Importá acá cada modelo para que SQLAlchemy lo registre en db.metadata
 """
 
 from proyecto.models import Administrator as Administrator
+from proyecto.models import Answer as Answer
+from proyecto.models import AuthorRecord as AuthorRecord
 from proyecto.models import Category as Category
 from proyecto.models import Moderator as Moderator
 from proyecto.models import Post as Post

@@ -3,11 +3,13 @@ from typing import TYPE_CHECKING
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from proyecto.models.Answer import Answer
 from proyecto.models.Post import Post
 from proyecto.models.QuestionTag import question_tag
 from proyecto.models.Tag import Tag
 
 if TYPE_CHECKING:
+    from proyecto.models.AuthorFactory import AuthorFactory
     from proyecto.models.Category import Category
     from proyecto.models.User import User
 
@@ -21,6 +23,11 @@ class Question(Post):
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     tags: Mapped[list[Tag]] = relationship(secondary=question_tag)
     author: Mapped[User] = relationship(back_populates="questions")
+    answers: Mapped[list[Answer]] = relationship(
+        back_populates="question",
+        foreign_keys="Answer.question_id",
+        order_by="Answer.id",
+    )
 
     __mapper_args__ = {"polymorphic_identity": "question"}
 
@@ -32,3 +39,13 @@ class Question(Post):
         self.title = title
         self.user_id = user_id
         self.tags = tags
+
+    def add_answer(self, body: str, factory: AuthorFactory) -> Answer:
+        """Create an answer whose author is chosen by the given factory.
+
+        The question does not know if the author is a human or an AI agent.
+        """
+        author = factory.create_author()
+        answer = Answer(body=body, author=author)
+        self.answers.append(answer)
+        return answer

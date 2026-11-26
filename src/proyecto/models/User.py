@@ -4,6 +4,7 @@ from sqlalchemy import CheckConstraint, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from proyecto.extensions import db
+from proyecto.models.AuthorRecord import AuthorRecord
 from proyecto.models.Question import Question
 
 pass_hasher = PasswordHasher()
@@ -39,6 +40,8 @@ class User(db.Model):
         String(20), nullable=False, server_default="regular_user"
     )
     questions: Mapped[list[Question]] = relationship(back_populates="author")
+    # Every user can author answers, so each one gets its own author record.
+    author_record: Mapped[AuthorRecord] = relationship(back_populates="user")
 
     __mapper_args__ = {
         # When loading a row, SQLAlchemy reads "role" to decide which
@@ -53,6 +56,7 @@ class User(db.Model):
         self.username = username
         self.email = email
         self.password_hash = password_hash
+        self.author_record = AuthorRecord()
 
     def get_display_name(self) -> str:
         return self.username
