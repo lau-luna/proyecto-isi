@@ -57,6 +57,6 @@
 <hr />
 
 <div class="tags-grid p-4">
-  {% for tag in tags %} {% include "tag/tag-card.html" %} {% endfor %}
+  {% for tag, n_questions, n_answers in rows %} {% include "tag/tag-card.html" %} {% endfor %}
 </div>
 {% endblock %}

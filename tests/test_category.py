@@ -25,6 +25,5 @@ def test_categories_page_lists_categories_in_alphabetical_order(client, session)
     assert b"Technology" in response.data
     assert b"Programming" in response.data
     assert response.data.index(b"Programming") < response.data.index(b"Technology")
-    assert b"#n" in response.data
     assert b"Questions" in response.data
     assert b"Answers" in response.data
