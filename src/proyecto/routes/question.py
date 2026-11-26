@@ -198,3 +198,22 @@ def accept_answer(answer_id):
 
     db.session.commit()
     return redirect(url_for("question.question_detail", question_id=question.id))
+
+
+@bp.route("/answers/<int:answer_id>/unaccept", methods=["POST"])
+@login_required
+def unaccept_answer(answer_id):
+    answer = db.get_or_404(Answer, answer_id)
+    question = answer.question
+
+    if not AcceptAnswerForm().validate_on_submit():
+        abort(400)
+
+    try:
+        question.unaccept_answer(answer, g.user)
+    except PermissionError:
+        # Only the question author can remove the acceptance.
+        abort(403)
+
+    db.session.commit()
+    return redirect(url_for("question.question_detail", question_id=question.id))

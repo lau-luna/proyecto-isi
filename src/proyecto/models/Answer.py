@@ -44,6 +44,9 @@ class Answer(Post):
     def mark_as_accepted(self) -> None:
         self.accepted = True
 
+    def unmark_as_accepted(self) -> None:
+        self.accepted = False
+
     @property
     def author(self) -> Author:
         return self.author_record.get_author()

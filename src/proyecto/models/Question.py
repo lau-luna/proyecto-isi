@@ -55,8 +55,16 @@ class Question(Post):
 
         A question can have several accepted answers.
         """
+        self._check_can_change_acceptance(answer, requester)
+        answer.mark_as_accepted()
+
+    def unaccept_answer(self, answer: Answer, requester: User) -> None:
+        """Remove the acceptance of an answer, with the same rules as accepting."""
+        self._check_can_change_acceptance(answer, requester)
+        answer.unmark_as_accepted()
+
+    def _check_can_change_acceptance(self, answer: Answer, requester: User) -> None:
         if answer.question is not self:
             raise ValueError("The answer does not belong to this question")
         if requester.id != self.user_id:
             raise PermissionError("Only the question author can accept answers")
-        answer.mark_as_accepted()

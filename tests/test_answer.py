@@ -169,3 +169,30 @@ def test_cannot_accept_an_answer_of_another_question(session):
         question.accept_answer(answer, asker)
 
     assert answer.accepted is False
+
+
+def test_question_author_can_unaccept_an_answer(session):
+    asker = create_test_user(session)
+    question = create_question(session, asker)
+    answer = question.add_answer("Press :q", HumanAuthorFactory(asker))
+    question.accept_answer(answer, asker)
+    session.commit()
+
+    question.unaccept_answer(answer, asker)
+    session.commit()
+
+    assert session.get(Answer, answer.id).accepted is False
+
+
+def test_other_user_cannot_unaccept_an_answer(session):
+    asker = create_test_user(session)
+    other = create_test_user(session, username="juan", email="juan@example.com")
+    question = create_question(session, asker)
+    answer = question.add_answer("Press :q", HumanAuthorFactory(other))
+    question.accept_answer(answer, asker)
+    session.commit()
+
+    with pytest.raises(PermissionError):
+        question.unaccept_answer(answer, other)
+
+    assert answer.accepted is True
