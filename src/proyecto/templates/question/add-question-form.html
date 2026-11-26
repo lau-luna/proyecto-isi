@@ -5,26 +5,15 @@ head %}
     background: transparent;
     border: 1px solid currentColor;
   }
+  /* Que el editor se vea como un input más de Bulma */
   #body-editor {
-    height: 50vh;
+    height: 450px; /* alto fijo: OverType llena el contenedor */
     border: 1px solid var(--bulma-border, #dbdbdb);
     border-radius: 4px;
     overflow: hidden;
   }
   #body-editor.is-danger {
     border-color: var(--bulma-danger, #f14668);
-  }
-
-  #body-editor .overtype-container {
-    height: 100% !important;
-    display: flex;
-    flex-direction: column;
-  }
-
-  #body-editor .overtype-wrapper {
-    flex: 1 1 auto !important;
-    height: auto !important;
-    min-height: 0;
   }
 </style>
 {% endblock %} {% block content %}
@@ -143,16 +132,16 @@ head %}
 
 <script src="https://cdn.jsdelivr.net/npm/overtype@2.3.4/dist/overtype.min.js"></script>
 <script>
-    const titleInput = document.getElementById("title-input");
-    const titleCount = document.getElementById("title-count");
-    const tagsInput = document.getElementById("tags-input");
-    const categorySelect = document.getElementById("category-select");
+  const titleInput = document.getElementById("title-input");
+  const titleCount = document.getElementById("title-count");
+  const tagsInput = document.getElementById("tags-input");
+  const categorySelect = document.getElementById("category-select");
 
-    const updateCount = () => (titleCount.textContent = titleInput.value.length);
-    titleInput.addEventListener("input", updateCount);
+  const updateCount = () => (titleCount.textContent = titleInput.value.length);
+  titleInput.addEventListener("input", updateCount);
 
-    // --- Editor markdown (OverType) ---
-    const [bodyEditor] = new OverType("#body-editor", {
+  // --- Editor markdown (OverType) ---
+  const [bodyEditor] = new OverType("#body-editor", {
     value: {{ (form.body.data or "") | tojson }},
     placeholder: "Body (Markdown supported)",
     toolbar: true,
@@ -160,37 +149,37 @@ head %}
     textareaProps: { name: "{{ form.body.name }}" },
   });
 
-    // --- Cambiar categoría => GET con ?category=, sin perder lo escrito ---
-    const DRAFT_KEY = "question-draft";
+  // --- Cambiar categoría => GET con ?category=, sin perder lo escrito ---
+  const DRAFT_KEY = "question-draft";
 
-    categorySelect.addEventListener("change", () => {
-      sessionStorage.setItem(
-        DRAFT_KEY,
-        JSON.stringify({
-          title: titleInput.value,
-          body: bodyEditor.getValue(),
-          tags: tagsInput.value,
-        })
-      );
-      const url = new URL(window.location.href);
-      url.searchParams.set("category", categorySelect.value);
-      window.location.href = url.toString();
-    });
+  categorySelect.addEventListener("change", () => {
+    sessionStorage.setItem(
+      DRAFT_KEY,
+      JSON.stringify({
+        title: titleInput.value,
+        body: bodyEditor.getValue(),
+        tags: tagsInput.value,
+      })
+    );
+    const url = new URL(window.location.href);
+    url.searchParams.set("category", categorySelect.value);
+    window.location.href = url.toString();
+  });
 
-    // Restaurar el borrador solo si venimos de un cambio de categoría
-    try {
-      const raw = sessionStorage.getItem(DRAFT_KEY);
-      if (raw) {
-        const draft = JSON.parse(raw);
-        titleInput.value = draft.title || "";
-        tagsInput.value = draft.tags || "";
-        bodyEditor.setValue(draft.body || "");
-      }
-    } catch (_) {
-      /* sessionStorage no disponible: no pasa nada */
+  // Restaurar el borrador solo si venimos de un cambio de categoría
+  try {
+    const raw = sessionStorage.getItem(DRAFT_KEY);
+    if (raw) {
+      const draft = JSON.parse(raw);
+      titleInput.value = draft.title || "";
+      tagsInput.value = draft.tags || "";
+      bodyEditor.setValue(draft.body || "");
     }
-    sessionStorage.removeItem(DRAFT_KEY);
+  } catch (_) {
+    /* sessionStorage no disponible: no pasa nada */
+  }
+  sessionStorage.removeItem(DRAFT_KEY);
 
-    updateCount();
+  updateCount();
 </script>
 {% endblock %}
