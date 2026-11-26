@@ -28,8 +28,13 @@ block content %}
     <div class="level-item">
       <div class="dropdown" id="sort-dropdown">
         <div class="dropdown-trigger">
+          {% set sort_labels = {"score": "Best Score", "newest": "Newest", "oldest":
+          "Oldest"} %}
           <button class="button" aria-haspopup="true" aria-controls="sort-menu">
-            <span>Sort by: <strong id="selected-sort">Newest</strong></span>
+            <span
+              >Sort by:
+              <strong id="selected-sort">{{ sort_labels[sort] }}</strong></span
+            >
             <span class="icon is-small">
               <i class="fas fa-angle-down" aria-hidden="true"></i>
             </span>
@@ -38,11 +43,13 @@ block content %}
 
         <div class="dropdown-menu" id="sort-menu" role="menu">
           <div class="dropdown-content">
-            <a href="#" class="dropdown-item is-active" data-sort="newest"
-              >Newest</a
+            {% for value, label in sort_labels.items() %}
+            <a
+              href="?sort={{ value }}"
+              class="dropdown-item{{ ' is-active' if value == sort else '' }}"
+              >{{ label }}</a
             >
-            <a href="#" class="dropdown-item" data-sort="oldest">Oldest</a>
-            <a href="#" class="dropdown-item" data-sort="score">Best Score</a>
+            {% endfor %}
           </div>
         </div>
       </div>
@@ -114,8 +121,6 @@ block content %}
 <script>
   const dropdown = document.getElementById("sort-dropdown");
   const trigger = dropdown.querySelector(".dropdown-trigger");
-  const items = dropdown.querySelectorAll(".dropdown-item");
-  const selectedLabel = document.getElementById("selected-sort");
 
   // Toggle dropdown open/close
   trigger.addEventListener("click", (e) => {
@@ -123,24 +128,7 @@ block content %}
     dropdown.classList.toggle("is-active");
   });
 
-  // Handle item selection
-  items.forEach((item) => {
-    item.addEventListener("click", (e) => {
-      e.preventDefault();
-
-      // Update active state
-      items.forEach((i) => i.classList.remove("is-active"));
-      item.classList.add("is-active");
-
-      // Update button label
-      selectedLabel.textContent = item.textContent;
-      dropdown.classList.remove("is-active");
-
-      // Trigger your sorting logic here
-      const sortValue = item.getAttribute("data-sort");
-      console.log("Sorting by:", sortValue);
-    });
-  });
+  // Each option is a link (?sort=...), so the server does the sorting.
 
   // Close when clicking outside
   document.addEventListener("click", () => {

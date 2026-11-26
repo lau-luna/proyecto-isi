@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% from "question/_question.html" import
+{% extends "base.html" %} {% from "vote/_vote_buttons.html" import vote_buttons %} {% from "question/_question.html" import
 question_post %} {% block title %}{{ question.title }}{% endblock %} {% block head %}
 <style>
   /* Make the editor look like a Bulma input (same as the question form). */
@@ -32,7 +32,7 @@ question_post %} {% block title %}{{ question.title }}{% endblock %} {% block he
 {{ question_post(question, detail=True) }}
 
 <h2 class="title is-4 mt-6 mb-4">Answers ({{ question.answers | length }})</h2>
-{% for answer in question.answers %}
+{% for answer in question.answers_by_score %}
 <div class="box{{ ' accepted-answer' if answer.accepted else '' }}">
   <div class="is-flex is-justify-content-space-between is-align-items-start">
     <p class="help mt-0 mb-3">
@@ -79,6 +79,7 @@ question_post %} {% block title %}{{ question.title }}{% endblock %} {% block he
   <div class="content">
     <md-block>{{ answer.body }}</md-block>
   </div>
+  {{ vote_buttons(answer) }}
 
   {# Replies: one level only, a reply cannot be replied to. #}
   {% for reply in answer.replies %}

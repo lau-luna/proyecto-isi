@@ -1,17 +1,22 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import ForeignKey, String, func, select
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from proyecto.models.Answer import Answer
 from proyecto.models.Post import Post
 from proyecto.models.QuestionTag import question_tag
 from proyecto.models.Tag import Tag
+from proyecto.models.Vote import Vote
 
 if TYPE_CHECKING:
     from proyecto.models.AuthorFactory import AuthorFactory
     from proyecto.models.Category import Category
     from proyecto.models.User import User
+
+
+# How a list of questions can be sorted (the first one is the default).
+SORT_OPTIONS = ("score", "newest", "oldest")
 
 
 class Question(Post):
@@ -39,6 +44,15 @@ class Question(Post):
         self.title = title
         self.user_id = user_id
         self.tags = tags
+
+    @property
+    def answers_by_score(self) -> list[Answer]:
+        """Answers with the most voted first.
+
+        sorted() is stable and answers are loaded oldest first, so answers
+        with the same score keep their age order.
+        """
+        return sorted(self.answers, key=lambda answer: answer.score, reverse=True)
 
     def add_answer(self, body: str, factory: AuthorFactory) -> Answer:
         """Create an answer whose author is chosen by the given factory.
@@ -68,3 +82,22 @@ class Question(Post):
             raise ValueError("The answer does not belong to this question")
         if requester.id != self.user_id:
             raise PermissionError("Only the question author can accept answers")
+
+    @staticmethod
+    def sort_order(sort: str = "score") -> tuple:
+        """ORDER BY clauses for a list of questions.
+
+        "score" (default): most voted first; ties go to the newest question.
+        "newest" / "oldest": by publication date.
+        """
+        if sort == "newest":
+            return (Question.published_at.desc(), Question.id.desc())
+        if sort == "oldest":
+            return (Question.published_at.asc(), Question.id.asc())
+        # The score is derived from the votes, so it is computed in SQL here.
+        score = (
+            select(func.coalesce(func.sum(Vote.value), 0))
+            .where(Vote.post_id == Question.id)
+            .scalar_subquery()
+        )
+        return (score.desc(), Question.published_at.desc(), Question.id.desc())

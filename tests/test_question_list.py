@@ -117,7 +117,7 @@ def test_questions_page_links_to_categories_instead_of_listing_them(client, sess
     assert response.status_code == 200
     assert b'href="/categories"' in response.data
     assert b"Browse categories" in response.data
-    assert b'href="/category/' not in response.data.split(b"Latest questions")[0]
+    assert b'href="/category/' not in response.data.split(b"Top questions")[0]
 
 
 def test_search_finds_questions_by_title(client, session):
