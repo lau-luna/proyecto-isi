@@ -19,12 +19,14 @@
   <div class="tags is-flex">
     {% for tag in question.tags %} {# TODO: make a link for every tag Tag Search
     with this tag.id #}
-    <span class="tag">
-      <span class="icon">
-        <i class="fa-solid fa-tag"></i>
+    <a href="/tag/{{ tag.id }}">
+      <span class="tag">
+        <span class="icon">
+          <i class="fa-solid fa-tag"></i>
+        </span>
+        <span> {{tag.name}} </span>
       </span>
-      <span> {{tag.name}} </span>
-    </span>
+    </a>
     {% endfor %}
   </div>
   <div class="content mb-4">

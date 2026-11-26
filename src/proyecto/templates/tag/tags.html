@@ -1,0 +1,62 @@
+{% extends "base.html" %} {% block title %}Tags{% endblock %} {% block head %}
+<style>
+  .tags-grid {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .tag-card {
+    width: fit-content;
+    max-width: 100%;
+    min-width: 0;
+    height: auto;
+    align-self: flex-start;
+  }
+
+  .tag-card:hover {
+    background-color: var(--bulma-background-hover);
+    box-shadow: var(--bulma-shadow);
+    transform: translateY(-0.125rem);
+  }
+
+  .tag-card-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    min-width: 0;
+  }
+
+  .tag-name {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .tag-counts {
+    flex: 0 0 auto;
+    display: flex;
+    gap: 0.6rem;
+    white-space: nowrap;
+  }
+</style>
+{% endblock %} {% block content %}
+<nav class="breadcrumb" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="/">Home</a></li>
+    <li class="is-active">
+      <a href="/tags" aria-current="page">Tags</a>
+    </li>
+  </ul>
+</nav>
+<h1 class="title">All tags</h1>
+<hr />
+
+<div class="tags-grid p-4">
+  {% for tag in tags %} {% include "tag/tag-card.html" %} {% endfor %}
+</div>
+{% endblock %}

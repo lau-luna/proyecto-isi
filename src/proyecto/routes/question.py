@@ -30,6 +30,13 @@ def post_question():
         if preselected in valid_ids:
             form.category.data = preselected
 
+        tag_ids = request.args.getlist("tag", type=int)
+        if tag_ids:
+            tag_names = db.session.scalars(
+                select(Tag.name).where(Tag.id.in_(tag_ids)).order_by(Tag.name)
+            ).all()
+            form.tags.data = " ".join(tag_names)
+
     if form.validate_on_submit():
         title = form.title.data.strip()
         body = form.body.data.strip()
