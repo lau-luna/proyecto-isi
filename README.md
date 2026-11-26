@@ -3,6 +3,26 @@
 Sitio de preguntas y respuestas hecho en Flask.
 UNRC 2026.
 
+## Ejecución
+1. Clonar el repositorio
+```bash
+git clone https://github.com/lau-luna/proyecto-isi
+```
+2. Hacer upgrade de las migraciones
+```bash
+uv run flask --app proyecto db upgrade head
+```
+3. Correr tests
+```bash
+uv run pytest -vv
+```
+4. Levantar la aplicación
+```bash
+uv run flask --app proyecto run
+```
+
+Actualmente cuenta con mocks de datos para mostrar el funcionamiento de la aplicación. Están definidos en `src/seeds.py` y se ejecutan con `seed_all()` en la app factory cuando se ejecuta la aplicación. Esto ocurre la primera vez que se hace `flask run`, cargándose una única vez en la base de datos.
+
 ## Integrantes
 
 - Lautaro Eduardo Eber Luna
