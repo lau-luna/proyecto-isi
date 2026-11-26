@@ -1,15 +1,12 @@
-{% extends "base.html" %}
-{% from "question/_question_meta.html" import question_meta %}
-
-{% block title %}{{ question.title }}{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% from "question/_question_meta.html" import
+question_meta %} {% block title %}{{ question.title }}{% endblock %} {% block
+content %}
 <a href="{{ url_for('question.questions') }}">&larr; Back to questions</a>
 
 <h1 class="title mt-4">{{ question.title }}</h1>
 {{ question_meta(question) }}
 
-<div class="box mt-4">
+<div class="content mt-4">
   <md-block>{{ question.body }}</md-block>
 </div>
 
