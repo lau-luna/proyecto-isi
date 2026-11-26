@@ -14,7 +14,10 @@ def index():
     logout_form = LogOutForm()
 
     latest_questions = db.session.scalars(
-        select(Question).join(Category).order_by(*Question.sort_order()).limit(10)
+        select(Question)
+        .join(Category)
+        .order_by(*Question.sort_order("newest"))
+        .limit(10)
     )
 
     return render_template(
