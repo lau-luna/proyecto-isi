@@ -18,6 +18,23 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     />
+    <style>
+      /* The whole question card opens the question: the title link is
+         stretched over the card, while inner links and buttons stay on top. */
+      .question-card {
+        position: relative;
+      }
+      .question-card-link::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+      }
+      .question-card a:not(.question-card-link),
+      .question-card button {
+        position: relative;
+        z-index: 1;
+      }
+    </style>
     {% block head %}{% endblock %}
   </head>
   <body>

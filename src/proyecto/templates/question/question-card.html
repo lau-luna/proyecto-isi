@@ -1,4 +1,4 @@
-<div class="box">
+<div class="box question-card">
   <div class="is-flex">
     <a class="pr-2" href="/category/{{ question.category.id }}">
       <span class="icon-text has-text-primary">
@@ -15,7 +15,10 @@
     <span> {{ question.author.get_display_name() }} </span>
   </span>
   <h1 class="title is-4 mb-4">
-    <a href="{{ url_for('question.question_detail', question_id=question.id) }}">
+    <a
+      class="question-card-link"
+      href="{{ url_for('question.question_detail', question_id=question.id) }}"
+    >
       {{ question.title }}
     </a>
   </h1>

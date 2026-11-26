@@ -85,6 +85,8 @@ def test_question_list_links_to_question_detail(client, session):
     response = client.get("/questions")
 
     assert f"/questions/{vim_question.id}".encode() in response.data
+    # The detail link is stretched over the whole card, not only the title.
+    assert b"question-card-link" in response.data
 
 
 def test_question_detail_shows_the_full_question(client, session):
