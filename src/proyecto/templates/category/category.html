@@ -1,0 +1,153 @@
+{% extends "base.html" %} {% block title %} {{ category.name }} {% endblock %}
+{% block content %}
+<nav class="breadcrumb" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="/">Home</a></li>
+    <li>
+      <a href="/categories">Categories</a>
+    </li>
+    <li class="is-active">
+      <a href="/category/{{ category.id }}" aria-current="page"
+        >{{ category.name }}</a
+      >
+    </li>
+  </ul>
+</nav>
+<div class="level">
+  <div class="level-left">
+    <div class="level-item">
+      <h1 class="title">
+        <span class="icon has-text-primary">
+          <i class="fa-solid fa-layer-group"></i>
+        </span>
+        {{ category.name }}
+      </h1>
+    </div>
+  </div>
+
+  <div class="level-right">
+    {% if questions_by_category | length != 0 %}
+    <div class="level-item">
+      <div class="dropdown" id="sort-dropdown">
+        <div class="dropdown-trigger">
+          <button class="button" aria-haspopup="true" aria-controls="sort-menu">
+            <span>Sort by: <strong id="selected-sort">Newest</strong></span>
+            <span class="icon is-small">
+              <i class="fas fa-angle-down" aria-hidden="true"></i>
+            </span>
+          </button>
+        </div>
+
+        <div class="dropdown-menu" id="sort-menu" role="menu">
+          <div class="dropdown-content">
+            <a href="#" class="dropdown-item is-active" data-sort="newest"
+              >Newest</a
+            >
+            <a href="#" class="dropdown-item" data-sort="oldest">Oldest</a>
+            <a href="#" class="dropdown-item" data-sort="score">Best Score</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="level-item">
+      <a
+        class="button"
+        href="{{ url_for('question.post_question', category=category.id) }}"
+      >
+        <span class="icon">
+          <i class="fa-solid fa-plus"></i>
+        </span>
+        <span>Ask Question</span>
+      </a>
+    </div>
+  </div>
+</div>
+<hr />
+
+<div class="columns is-multiline is-centered">
+  {% if questions_by_category | length != 0 %} {% for question in
+  questions_by_category %}
+  <div class="column is-8 mt-1 mb-1">
+    {% include "question/question-card.html" %}
+  </div>
+  {% endfor %} {% else %}
+  <div class="column is-12 mt-1 mb-1">
+    <h1 class="subtitle has-text-centered has-text-grey-dark">
+      This category has no questions yet
+    </h1>
+  </div>
+  {% endif %}
+</div>
+
+{# TODO: handle pagination #} {% if questions_by_category | length != 0 %}
+<nav
+  class="pagination is-centered mt-8"
+  role="navigation"
+  aria-label="pagination"
+>
+  <a href="#" class="pagination-previous">Previous</a>
+  <a href="#" class="pagination-next">Next page</a>
+  <ul class="pagination-list">
+    <li><a href="#" class="pagination-link" aria-label="Goto page 1">1</a></li>
+    <li><span class="pagination-ellipsis">&hellip;</span></li>
+    <li>
+      <a href="#" class="pagination-link" aria-label="Goto page 45">45</a>
+    </li>
+    <li>
+      <a
+        class="pagination-link is-current"
+        aria-label="Page 46"
+        aria-current="page"
+        >46</a
+      >
+    </li>
+    <li>
+      <a href="#" class="pagination-link" aria-label="Goto page 47">47</a>
+    </li>
+    <li><span class="pagination-ellipsis">&hellip;</span></li>
+    <li>
+      <a href="#" class="pagination-link" aria-label="Goto page 86">86</a>
+    </li>
+  </ul>
+</nav>
+
+{% endif %} {# TODO: change the is-active background color to dark grey#}
+<script>
+  const dropdown = document.getElementById("sort-dropdown");
+  const trigger = dropdown.querySelector(".dropdown-trigger");
+  const items = dropdown.querySelectorAll(".dropdown-item");
+  const selectedLabel = document.getElementById("selected-sort");
+
+  // Toggle dropdown open/close
+  trigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    dropdown.classList.toggle("is-active");
+  });
+
+  // Handle item selection
+  items.forEach((item) => {
+    item.addEventListener("click", (e) => {
+      e.preventDefault();
+
+      // Update active state
+      items.forEach((i) => i.classList.remove("is-active"));
+      item.classList.add("is-active");
+
+      // Update button label
+      selectedLabel.textContent = item.textContent;
+      dropdown.classList.remove("is-active");
+
+      // Trigger your sorting logic here
+      const sortValue = item.getAttribute("data-sort");
+      console.log("Sorting by:", sortValue);
+    });
+  });
+
+  // Close when clicking outside
+  document.addEventListener("click", () => {
+    dropdown.classList.remove("is-active");
+  });
+</script>
+{% endblock %}

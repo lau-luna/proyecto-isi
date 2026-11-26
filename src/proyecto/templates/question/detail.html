@@ -4,7 +4,7 @@
 {% block title %}{{ question.title }}{% endblock %}
 
 {% block content %}
-<a href="{{ url_for('question.list_questions') }}">&larr; Back to questions</a>
+<a href="{{ url_for('question.questions') }}">&larr; Back to questions</a>
 
 <h1 class="title mt-4">{{ question.title }}</h1>
 {{ question_meta(question) }}

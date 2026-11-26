@@ -58,34 +58,33 @@ def test_question_list_shows_title_author_category_tags_and_date(client, session
     assert published.encode() in response.data
 
 
-def test_question_list_filters_by_category(client, session):
+def test_category_page_shows_only_its_questions(client, session):
     programming, _, _, _ = create_sample_questions(session)
 
-    response = client.get(f"/questions?category={programming.id}")
+    response = client.get(f"/category/{programming.id}")
 
     assert response.status_code == 200
     assert b"How do I exit vim" in response.data
     assert b"How do I tune a guitar" not in response.data
 
 
-def test_question_list_filters_by_tag(client, session):
-    create_sample_questions(session)
+def test_tag_page_shows_only_its_questions(client, session):
+    _, _, _, guitar_question = create_sample_questions(session)
+    guitar_tag = guitar_question.tags[0]
 
-    response = client.get("/questions?tag=guitar")
+    response = client.get(f"/tag/{guitar_tag.id}")
 
     assert response.status_code == 200
     assert b"How do I tune a guitar" in response.data
     assert b"How do I exit vim" not in response.data
 
 
-def test_question_list_shows_message_when_there_are_no_results(client, session):
-    create_sample_questions(session)
+def test_question_list_links_to_question_detail(client, session):
+    _, _, vim_question, _ = create_sample_questions(session)
 
-    response = client.get("/questions?tag=nonexistent")
+    response = client.get("/questions")
 
-    assert response.status_code == 200
-    assert b"No questions found." in response.data
-    assert b"How do I exit vim" not in response.data
+    assert f"/questions/{vim_question.id}".encode() in response.data
 
 
 def test_question_detail_shows_the_full_question(client, session):

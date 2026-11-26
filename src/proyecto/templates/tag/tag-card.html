@@ -1,0 +1,18 @@
+<div class="card tag-card">
+  <a class="tag-card-link" href="/tag/{{ tag.id }}">
+    <span class="icon has-text-primary">
+      <i class="fa-solid fa-tag"></i>
+    </span>
+    <span class="tag-name has-text-white has-text-weight-semibold"
+      >{{ tag.name }}</span
+    >
+    <span class="tag-counts is-size-7 has-text-grey">
+      {# TODO: Replace the placeholders with question and answer count queries.
+      #}
+      <span title="Questions">
+        <i class="fa-regular fa-circle-question"></i> #n
+      </span>
+      <span title="Answers"> <i class="fa-regular fa-comment"></i> #n </span>
+    </span>
+  </a>
+</div>

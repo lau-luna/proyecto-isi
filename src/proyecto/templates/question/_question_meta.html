@@ -7,14 +7,14 @@
   </span>
   <a
     class="tag is-info is-light mr-2"
-    href="{{ url_for('question.list_questions', category=question.category_id) }}"
+    href="{{ url_for('category.category', id=question.category_id) }}"
   >
     {{ question.category.name }}
   </a>
   {% for tag in question.tags %}
   <a
     class="tag is-light mr-1"
-    href="{{ url_for('question.list_questions', tag=tag.name) }}"
+    href="{{ url_for('tags.tag', id=tag.id) }}"
   >
     #{{ tag.name }}
   </a>

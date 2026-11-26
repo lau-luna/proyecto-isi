@@ -24,6 +24,19 @@ def post_question():
         ).all()
     ]
 
+    if request.method == "GET":
+        preselected = request.args.get("category", type=int)
+        valid_ids = {id for id, _ in form.category.choices}
+        if preselected in valid_ids:
+            form.category.data = preselected
+
+        tag_ids = request.args.getlist("tag", type=int)
+        if tag_ids:
+            tag_names = db.session.scalars(
+                select(Tag.name).where(Tag.id.in_(tag_ids)).order_by(Tag.name)
+            ).all()
+            form.tags.data = " ".join(tag_names)
+
     if form.validate_on_submit():
         title = form.title.data.strip()
         body = form.body.data.strip()
@@ -54,7 +67,7 @@ def post_question():
         db.session.commit()
 
         # TODO: redirect to the question link using the new id
-        return redirect(url_for("index"))
+        return redirect(url_for("index.index"))
 
     return (
         render_template(
@@ -67,20 +80,14 @@ def post_question():
 
 
 @bp.route("/questions", methods=["GET"])
-def list_questions():
-    # Invalid or missing values become None, so they simply do not filter.
-    category_id = request.args.get("category", type=int)
-    tag_name = request.args.get("tag", default="").strip()
-
-    questions = Question.find_all(category_id=category_id, tag_name=tag_name)
-    categories = db.session.scalars(select(Category).order_by(Category.name)).all()
+def questions():
+    categories = db.session.scalars(select(Category)).all()
+    latest_questions = db.session.scalars(select(Question).join(Category).limit(10))
 
     return render_template(
-        "question/list.html",
-        questions=questions,
+        "question/questions.html",
         categories=categories,
-        selected_category_id=category_id,
-        selected_tag=tag_name,
+        latest_questions=latest_questions,
         logout_form=LogOutForm(),
     )
 

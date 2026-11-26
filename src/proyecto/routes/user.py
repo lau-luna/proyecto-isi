@@ -121,7 +121,7 @@ def login():
 
         session.clear()
         session["user_id"] = user.id
-        return redirect(url_for("index"))
+        return redirect(url_for("index.index"))
 
     return render_template("user/login.html", form=form, error=error)
 
@@ -130,4 +130,4 @@ def login():
 @login_required
 def logout():
     session.clear()
-    return redirect(url_for("index"))
+    return redirect(url_for("index.index"))
