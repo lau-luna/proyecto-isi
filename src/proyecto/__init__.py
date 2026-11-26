@@ -15,7 +15,7 @@ from proyecto.routes.question import bp as question_bp
 from proyecto.routes.tag import bp as tag_bp
 from proyecto.routes.user import bp as user_bp
 from proyecto.routes.vote import bp as vote_bp
-from proyecto.seeds import seed_categories
+from proyecto.seeds import seed_all
 
 from . import models  # noqa: F401  (registra los modelos en db.metadata)
 
@@ -40,7 +40,7 @@ def create_app(environment="development"):
     db.init_app(app)
     migrate.init_app(app, db)
     with app.app_context():
-        seed_categories()
+        seed_all()
 
     @app.before_request
     def load_logged_in_user():
