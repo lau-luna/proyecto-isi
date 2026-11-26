@@ -81,13 +81,22 @@ def post_question():
 
 @bp.route("/questions", methods=["GET"])
 def questions():
-    categories = db.session.scalars(select(Category)).all()
-    latest_questions = db.session.scalars(select(Question).join(Category).limit(10))
+    search = request.args.get("q", default="").strip()
+
+    query = select(Question).order_by(Question.published_at.desc())
+    if search:
+        # Case-insensitive match on the question title or body.
+        pattern = f"%{search}%"
+        query = query.where(
+            Question.title.ilike(pattern) | Question.body.ilike(pattern)
+        )
+    else:
+        query = query.limit(10)
 
     return render_template(
         "question/questions.html",
-        categories=categories,
-        latest_questions=latest_questions,
+        questions=db.session.scalars(query).all(),
+        search=search,
         logout_form=LogOutForm(),
     )
 

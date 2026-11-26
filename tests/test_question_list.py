@@ -107,3 +107,55 @@ def test_question_detail_returns_404_for_missing_question(client, session):
     response = client.get("/questions/999")
 
     assert response.status_code == 404
+
+
+def test_questions_page_links_to_categories_instead_of_listing_them(client, session):
+    create_sample_questions(session)
+
+    response = client.get("/questions")
+
+    assert response.status_code == 200
+    assert b'href="/categories"' in response.data
+    assert b"Browse categories" in response.data
+    assert b'href="/category/' not in response.data.split(b"Latest questions")[0]
+
+
+def test_search_finds_questions_by_title(client, session):
+    create_sample_questions(session)
+
+    response = client.get("/questions?q=VIM")
+
+    assert response.status_code == 200
+    assert b"How do I exit vim" in response.data
+    assert b"How do I tune a guitar" not in response.data
+
+
+def test_search_finds_questions_by_body(client, session):
+    author = create_test_user(session)
+    category = Category("Music")
+    session.add(category)
+    session.commit()
+    create_question(session, author, category, "Strings", body="Nylon or steel?")
+    create_question(session, author, category, "Drums", body="Which sticks?")
+
+    response = client.get("/questions?q=nylon")
+
+    assert b"Strings" in response.data
+    assert b"Drums" not in response.data
+
+
+def test_search_without_results_shows_a_message(client, session):
+    create_sample_questions(session)
+
+    response = client.get("/questions?q=nonexistent")
+
+    assert response.status_code == 200
+    assert b"No questions found" in response.data
+    assert b"How do I exit vim" not in response.data
+
+
+def test_navbar_search_submits_to_questions(client, session):
+    response = client.get("/")
+
+    assert b'action="/questions"' in response.data
+    assert b'name="q"' in response.data

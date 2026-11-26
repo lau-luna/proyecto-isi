@@ -49,12 +49,19 @@
       </div>
 
       <div class="navbar-item is-expanded is-fullwidth">
-        <p class="control has-icons-left is-expanded">
-          <input class="input is-rounded" type="search" placeholder="Search" />
+        <form class="control has-icons-left is-expanded" action="/questions" method="get">
+          <input
+            class="input is-rounded"
+            type="search"
+            name="q"
+            placeholder="Search questions"
+            value="{{ request.args.get('q', '') }}"
+            aria-label="Search questions"
+          />
           <span class="icon is-left">
             <i class="fas fa-search" aria-hidden="true"></i>
           </span>
-        </p>
+        </form>
       </div>
 
       <div class="navbar-end is-flex-grow-1 is-justify-content-flex-end">

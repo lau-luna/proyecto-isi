@@ -7,25 +7,27 @@ content %}
       <li class="is-active"><a href="#" aria-current="page">Questions</a></li>
     </ul>
   </nav>
-  <h1 class="title">Categories</h1>
-  <hr />
-  <div class="grid mb-6">
-    {% for category in categories: %}
-    <div class="cell button">
-      <a href="/category/{{ category.id }}">
-        <p class="has-text-info">{{ category.name }}</p>
-      </a>
-    </div>
-    {% endfor %}
-  </div>
 
+  <a class="button is-link is-outlined mb-5" href="/categories">
+    <span class="icon">
+      <i class="fa-solid fa-layer-group"></i>
+    </span>
+    <span>Browse categories</span>
+  </a>
+
+  {% if search %}
+  <h1 class="title mt-2">Results for "{{ search }}"</h1>
+  {% else %}
   <h1 class="title mt-2">Latest questions</h1>
+  {% endif %}
   <hr />
   <div class="columns is-centered is-multiline">
-    {% for question in latest_questions: %}
+    {% for question in questions %}
     <div class="column is-8 mt-1 mb-1">
       {% include "question/question-card.html" %}
     </div>
+    {% else %}
+    <p class="has-text-grey">No questions found.</p>
     {% endfor %}
   </div>
 </div>
