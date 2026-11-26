@@ -85,7 +85,10 @@ class Question {
 class Answer {
   - accepted : boolean
   + markAsAccepted() : void
+  + addReply(body : String, factory : AuthorFactory) : Reply
 }
+
+class Reply
 
 class Vote {
   - date : DateTime
@@ -102,9 +105,12 @@ class Tag {
 
 Post <|-- Question
 Post <|-- Answer
+Post <|-- Reply
 
 Question "1" *-right- "0..*" Answer : answers
 Answer "0..*" -down-> "1" Author : author
+Answer "1" *-down- "0..*" Reply : replies
+Reply "0..*" -down-> "1" Author : author
 Question "0..*" -up-> "1" Category : category
 Question "0..*" -up-> "0..*" Tag : tags
 Question "0..*" -down-> "1" User : author
@@ -113,6 +119,7 @@ Post "1" *-right- "0..*" Vote : votes
 Vote "0..*" -down-> "1" User : voter
 
 Question ..> AuthorFactory : <<use>>
+Answer ..> AuthorFactory : <<use>>
 
 ' =========================================================
 ' 4. STRATEGY FOR LLM PROVIDERS
@@ -170,6 +177,7 @@ legend bottom
   |= Element |= Design decisions and business rules |
   | **Question** | Only a human User can create a Question.\nOnly the author of the Question can accept answers (acceptAnswer receives the requester).\nThere can be several accepted answers.\nBelongs to one Category and has 0..* Tags.\naddAnswer() receives an AuthorFactory, gets the Author with createAuthor() and creates the Answer;\nQuestion does not know whether the author is human or AI. |
   | **Answer** | Only knows the Author interface: it is agnostic to whether a human or an AIAgent wrote it. |
+  | **Reply** | A reply to an Answer, created with Answer.addReply(body, factory) (same Factory Method as answers).\nOnly one level: a Reply cannot be replied to. Replies are not answers of the Question and cannot be accepted.\nOnly knows the Author interface. |
   | **Post / Vote** | Only a registered User can cast votes.\nVote is a separate class: a User can cast only one Vote per Post.\nscore is derived (sum of the Vote values, +1 / -1). |
   | **Automatic answer** | 1. Checks whether the Question has the trigger Tag ("ia-help") or the time without answers has expired.\n2. Uses LLMStrategy.generate(prompt) to get the text.\n3. Calls Question.addAnswer(text, aiAgentFactory).\nThe AIAgent is pre-registered: the AIAgentFactory returns it, a new one is not created for each answer.\nThe strategy is interchangeable and stays decoupled from the domain. |
 endlegend
