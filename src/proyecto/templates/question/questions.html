@@ -1,0 +1,41 @@
+{% extends "base.html" %} {% block title %}Questions{% endblock %} {% block
+content %}
+<div class="block">
+  <nav class="breadcrumb" aria-label="breadcrumbs">
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li class="is-active"><a href="#" aria-current="page">Questions</a></li>
+    </ul>
+  </nav>
+
+  <a class="button is-primary is-outlined mb-5" href="/categories">
+    <span class="icon">
+      <i class="fa-solid fa-layer-group"></i>
+    </span>
+    <span>Browse categories</span>
+  </a>
+
+  <a class="button is-primary is-outlined mb-5 ml-4" href="/tags">
+    <span class="icon">
+      <i class="fa-solid fa-tags"></i>
+    </span>
+    <span>Browse tags</span>
+  </a>
+
+  {% if search %}
+  <h1 class="title mt-2">Results for "{{ search }}"</h1>
+  {% else %}
+  <h1 class="title mt-2">Latest questions</h1>
+  {% endif %}
+  <hr />
+  <div class="columns is-centered is-multiline">
+    {% for question in questions %}
+    <div class="column is-8 mt-1 mb-1">
+      {% include "question/question-card.html" %}
+    </div>
+    {% else %}
+    <p class="has-text-grey">No questions found.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

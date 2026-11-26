@@ -1,0 +1,37 @@
+{% extends "base.html" %} {% block title %}Categories{% endblock %} {% block
+head %}
+<style>
+  .category-card {
+    height: 100%;
+    transition:
+      box-shadow 0.2s ease,
+      transform 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .category-card:hover {
+    background-color: var(--bulma-background-hover);
+    box-shadow: var(--bulma-shadow);
+    transform: translateY(-0.25rem);
+  }
+</style>
+{% endblock %} {% block content %}
+<nav class="breadcrumb" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="/">Home</a></li>
+    <li class="is-active">
+      <a href="/categories" aria-current="page">Categories</a>
+    </li>
+  </ul>
+</nav>
+<h1 class="title">All categories</h1>
+<hr />
+
+<div class="columns is-multiline p-4">
+  {% for category in categories %}
+  <div class="column is-6-mobile is-4-tablet is-2-desktop">
+    {% include "category/category-card.html" %}
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}Q&amp;A site{% endblock %}</title>
+    <title>{% block title %}Based Q&amp;A{% endblock %}</title>
 
     <link
       rel="stylesheet"
@@ -14,40 +14,96 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <style>
+      /* The whole question card opens the question: the title link is
+         stretched over the card, while inner links and buttons stay on top. */
+      /* Both navbar sides share the free space equally, so the search box
+         stays centered regardless of what each side contains. */
+      .navbar-side {
+        flex: 1 1 0;
+      }
+      .navbar-search {
+        flex: 0 1 42rem;
+      }
+      .navbar-search form {
+        width: 100%;
+      }
+      .question-card {
+        position: relative;
+      }
+      .question-card-link::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+      }
+      .question-card a:not(.question-card-link),
+      .question-card button {
+        position: relative;
+        z-index: 1;
+      }
+    </style>
     {% block head %}{% endblock %}
   </head>
   <body>
-    <nav
-      class="navbar container"
-      role="navigation"
-      aria-label="main navigation"
-    >
-      <div class="navbar-brand">
-        <a class="navbar-item title is-3 mb-0" href="{{ url_for('index') }}">
-          Q&amp;A site
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand navbar-side">
+        <a
+          class="navbar-item title is-3 mb-0"
+          href="{{ url_for('index.index') }}"
+        >
+          BASED Q&amp;A
         </a>
       </div>
 
-      <div class="navbar-end">
+      <div class="navbar-item navbar-search">
+        <form class="control has-icons-left is-expanded" action="/questions" method="get">
+          <input
+            class="input is-rounded is-medium"
+            type="search"
+            name="q"
+            placeholder="Search questions"
+            value="{{ request.args.get('q', '') }}"
+            aria-label="Search questions"
+          />
+          <span class="icon is-left">
+            <i class="fas fa-search" aria-hidden="true"></i>
+          </span>
+        </form>
+      </div>
+
+      <div class="navbar-end navbar-side is-justify-content-flex-end">
         <div class="navbar-item">
           {% if g.user %}
           <span class="mr-3">
             Hello, <strong>{{ g.user.get_display_name() }}</strong>
           </span>
-          {# Administrator is checked first: an Administrator is also a
-          Moderator. #} {% if user_has_role(g.user, Administrator) %}
+          {% if user_has_role(g.user, Administrator) %}
           <span class="tag is-danger mr-3">Administrator</span>
           {% elif user_has_role(g.user, Moderator) %}
           <span class="tag is-warning mr-3">Moderator</span>
           {% endif %}
           <form action="{{ url_for('user.logout') }}" method="post">
-            {{ logout_form.hidden_tag() }} {{ logout_form.submit(class="button
-            is-light") }}
+            {{ logout_form.hidden_tag() }}
+            <button type="submit" class="button is-light">
+              <span class="icon">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+              </span>
+              <span>Log Out</span>
+            </button>
           </form>
           {% else %}
           <div class="buttons">
-            <a class="button is-link" href="{{ url_for('user.login') }}">
-              Log in
+            <a class="button is-primary" href="{{ url_for('user.login') }}">
+              <span class="icon-text">
+                <span class="icon">
+                  <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                </span>
+                <span>Log in</span>
+              </span>
             </a>
             <a class="button is-light" href="{{ url_for('user.register') }}">
               Register
@@ -58,8 +114,98 @@
       </div>
     </nav>
 
-    <main class="section">
-      <div class="container">{% block content %}{% endblock %}</div>
+    <main
+      class="columns is-gapless"
+      style="
+        height: calc(100vh - var(--bulma-navbar-height, 3.25rem));
+        margin: 0;
+      "
+    >
+      <aside
+        class="column is-2 menu"
+        style="height: 100%; overflow-y: auto; border-right: 1px solid #4a4a4a"
+      >
+        <div class="p-5">
+          <p class="menu-label">General</p>
+          <ul class="menu-list">
+            <li>
+              <a href="/">
+                <span class="icon-text">
+                  <span class="icon">
+                    <i class="fas fa-home"></i>
+                  </span>
+                  <span>Home</span>
+                </span>
+              </a>
+            </li>
+            <li>
+              <a href="/categories">
+                <span class="icon-text">
+                  <span class="icon">
+                    <i class="fa-solid fa-layer-group"></i>
+                  </span>
+                  <span>Categories</span>
+                </span>
+              </a>
+            </li>
+            <li>
+              <a href="/tags">
+                <span class="icon-text">
+                  <span class="icon">
+                    <i class="fa-solid fa-tags"></i>
+                  </span>
+                  <span>Tags Search</span>
+                </span>
+              </a>
+            </li>
+          </ul>
+          <p class="menu-label">My account</p>
+          <ul class="menu-list">
+            <li>
+              <a href="/">
+                <span class="icon-text">
+                  <span class="icon">
+                    <i class="fa-solid fa-question"></i>
+                  </span>
+                  <span>My Questions</span>
+                </span>
+              </a>
+            </li>
+            <li>
+              <a href="/">
+                <span class="icon-text">
+                  <span class="icon">
+                    <i class="fa-solid fa-reply"></i>
+                  </span>
+                  <span>My Answers</span>
+                </span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </aside>
+      <div
+        class="column"
+        style="
+          height: 100%;
+          overflow-y: auto;
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+        "
+      >
+        <div class="p-5" style="flex: 1 0 auto">
+          {% block content %}{% endblock %}
+        </div>
+        <footer class="footer" style="flex-shrink: 0">
+          <div class="content has-text-centered">
+            <p>
+              <strong>BASED Q&amp;A</strong> — Software Engineering, UNRC 2026 ·
+              <a href="https://github.com/lau-luna/proyecto-isi">GitHub</a>
+            </p>
+          </div>
+        </footer>
+      </div>
     </main>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>

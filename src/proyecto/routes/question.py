@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template, session, url_for
+from flask import Blueprint, redirect, render_template, request, session, url_for
 from sqlalchemy import select
 
 from proyecto.extensions import db
@@ -23,6 +23,19 @@ def post_question():
             select(Category).order_by(Category.name)
         ).all()
     ]
+
+    if request.method == "GET":
+        preselected = request.args.get("category", type=int)
+        valid_ids = {id for id, _ in form.category.choices}
+        if preselected in valid_ids:
+            form.category.data = preselected
+
+        tag_ids = request.args.getlist("tag", type=int)
+        if tag_ids:
+            tag_names = db.session.scalars(
+                select(Tag.name).where(Tag.id.in_(tag_ids)).order_by(Tag.name)
+            ).all()
+            form.tags.data = " ".join(tag_names)
 
     if form.validate_on_submit():
         title = form.title.data.strip()
@@ -54,7 +67,7 @@ def post_question():
         db.session.commit()
 
         # TODO: redirect to the question link using the new id
-        return redirect(url_for("index"))
+        return redirect(url_for("index.index"))
 
     return (
         render_template(
@@ -63,4 +76,37 @@ def post_question():
             logout_form=LogOutForm(),
         ),
         400 if form.is_submitted() else 200,
+    )
+
+
+@bp.route("/questions", methods=["GET"])
+def questions():
+    search = request.args.get("q", default="").strip()
+
+    query = select(Question).order_by(Question.published_at.desc())
+    if search:
+        # Case-insensitive match on the question title or body.
+        pattern = f"%{search}%"
+        query = query.where(
+            Question.title.ilike(pattern) | Question.body.ilike(pattern)
+        )
+    else:
+        query = query.limit(10)
+
+    return render_template(
+        "question/questions.html",
+        questions=db.session.scalars(query).all(),
+        search=search,
+        logout_form=LogOutForm(),
+    )
+
+
+@bp.route("/questions/<int:question_id>", methods=["GET"])
+def question_detail(question_id):
+    question = db.get_or_404(Question, question_id)
+
+    return render_template(
+        "question/detail.html",
+        question=question,
+        logout_form=LogOutForm(),
     )

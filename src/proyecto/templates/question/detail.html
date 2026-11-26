@@ -1,0 +1,30 @@
+{% extends "base.html" %} {% from "question/_question_meta.html" import
+question_meta, question_tags, question_actions %} {% block title %}{{
+question.title }}{% endblock %} {% block content %}
+<a class="is-inline-block mb-4" href="{{ url_for('question.questions') }}">
+  <span class="icon-text">
+    <span class="icon"><i class="fa-solid fa-arrow-left"></i></span>
+    <span>Back to questions</span>
+  </span>
+</a>
+
+<div class="p-5">
+  {{ question_meta(question) }}
+
+  <h1 class="title is-3 mb-4">{{ question.title }}</h1>
+
+  {{ question_tags(question) }}
+
+  <div class="content mb-4">
+    <md-block>{{ question.body }}</md-block>
+  </div>
+
+  {{ question_actions(question) }}
+</div>
+
+{# Answers are added by issue #8 (Answer model); this section lists them. #}
+<h2 class="title is-4 mt-6 mb-4">Answers</h2>
+<div class="box">
+  <p class="has-text-grey has-text-centered">No answers yet.</p>
+</div>
+{% endblock %}

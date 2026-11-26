@@ -1,8 +1,7 @@
 from argon2 import PasswordHasher
 from argon2.exceptions import InvalidHashError, VerifyMismatchError
-from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import CheckConstraint, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from proyecto.extensions import db
 from proyecto.models.Question import Question
@@ -39,7 +38,7 @@ class User(db.Model):
     role: Mapped[str] = mapped_column(
         String(20), nullable=False, server_default="regular_user"
     )
-    questions: Mapped[list[Question]] = relationship()
+    questions: Mapped[list[Question]] = relationship(back_populates="author")
 
     __mapper_args__ = {
         # When loading a row, SQLAlchemy reads "role" to decide which
