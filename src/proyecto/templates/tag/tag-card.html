@@ -7,12 +7,12 @@
       >{{ tag.name }}</span
     >
     <span class="tag-counts is-size-7 has-text-grey">
-      {# TODO: Replace the placeholders with question and answer count queries.
-      #}
       <span title="Questions">
-        <i class="fa-regular fa-circle-question"></i> #n
+        <i class="fa-regular fa-circle-question"></i> {{ n_questions }}
       </span>
-      <span title="Answers"> <i class="fa-regular fa-comment"></i> #n </span>
+      <span title="Answers">
+        <i class="fa-regular fa-comment"></i> {{ n_answers }}
+      </span>
     </span>
   </a>
 </div>

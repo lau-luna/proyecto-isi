@@ -1,17 +1,18 @@
 <div class="card category-card">
-  <a href="/category/{{ category.id }}">
+  <a href="/category/{{ row[0].id }}">
     <div class="card-content has-text-centered p-3">
       <span class="icon has-text-primary mb-2">
         <i class="fa-solid fa-layer-group fa-lg"></i>
       </span>
-      <p class="title is-6 has-text-white mb-3">{{ category.name }}</p>
+      <p class="title is-6 has-text-white mb-3">{{ row[0].name }}</p>
       <div class="is-flex is-justify-content-center is-size-7 has-text-grey">
-        {# TODO: Replace the placeholders with question and answer count queries. #}
         <span class="mx-2" title="Questions">
-          <i class="fa-regular fa-circle-question"></i> #n
+          <i class="fa-regular fa-circle-question"></i>
+          {{ row[1] }}
         </span>
         <span class="mx-2" title="Answers">
-          <i class="fa-regular fa-comment"></i> #n
+          <i class="fa-regular fa-comment"></i>
+          {{ row[2] }}
         </span>
       </div>
     </div>
