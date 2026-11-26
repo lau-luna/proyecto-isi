@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template
 from sqlalchemy import distinct, func, select
+from sqlalchemy.orm import aliased
 
 from proyecto.extensions import db
 from proyecto.models.Answer import Answer
@@ -14,18 +15,19 @@ bp = Blueprint("category", __name__, template_folder="templates")
 def categories():
     logout_form = LogOutForm()
 
+    answer = aliased(Answer, flat=True)
+
     rows = db.session.execute(
         select(
             Category,
             func.count(distinct(Question.id)),
-            func.count(Answer.id),
+            func.count(answer.id),
         )
         .outerjoin(Question, Question.category_id == Category.id)
-        .outerjoin(Answer, Answer.question_id == Question.id)
+        .outerjoin(answer, answer.question_id == Question.id)
         .group_by(Category.id)
-        .order_by(Category.name)
+        .order_by(Category.name.asc())
     ).all()
-
     return render_template(
         "category/categories.html", rows=rows, logout_form=logout_form
     )
