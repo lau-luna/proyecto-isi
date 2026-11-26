@@ -49,6 +49,21 @@
     {% block head %}{% endblock %}
   </head>
   <body>
+    <script>
+      document.addEventListener("click", async (e) => {
+        const btn = e.target.closest("[data-copy]");
+        if (!btn) return;
+        try {
+          await navigator.clipboard.writeText(btn.dataset.copy);
+          const icon = btn.querySelector("i");
+          const original = icon.className;
+          icon.className = "fa-solid fa-check";
+          setTimeout(() => (icon.className = original), 1500);
+        } catch (err) {
+          console.error("No se pudo copiar:", err);
+        }
+      });
+    </script>
     <nav class="navbar" role="navigation" aria-label="main navigation">
       <div class="navbar-brand navbar-side">
         <a
@@ -60,7 +75,11 @@
       </div>
 
       <div class="navbar-item navbar-search">
-        <form class="control has-icons-left is-expanded" action="/questions" method="get">
+        <form
+          class="control has-icons-left is-expanded"
+          action="/questions"
+          method="get"
+        >
           <input
             class="input is-rounded is-medium"
             type="search"

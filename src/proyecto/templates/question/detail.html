@@ -1,6 +1,5 @@
-{% extends "base.html" %} {% from "question/_question_meta.html" import
-question_meta, question_tags, question_actions %} {% block title %}{{
-question.title }}{% endblock %} {% block head %}
+{% extends "base.html" %} {% from "question/_question.html" import
+question_post %} {% block title %}{{ question.title }}{% endblock %} {% block head %}
 <style>
   /* Make the editor look like a Bulma input (same as the question form). */
   #answer-editor {
@@ -26,19 +25,7 @@ question.title }}{% endblock %} {% block head %}
   </span>
 </a>
 
-<div class="p-5">
-  {{ question_meta(question) }}
-
-  <h1 class="title is-3 mb-4">{{ question.title }}</h1>
-
-  {{ question_tags(question) }}
-
-  <div class="content mb-4">
-    <md-block>{{ question.body }}</md-block>
-  </div>
-
-  {{ question_actions(question) }}
-</div>
+{{ question_post(question, detail=True) }}
 
 <h2 class="title is-4 mt-6 mb-4">Answers ({{ question.answers | length }})</h2>
 {% for answer in question.answers %}
