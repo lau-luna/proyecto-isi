@@ -1,4 +1,7 @@
-from typing import Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
+
+if TYPE_CHECKING:
+    from proyecto.models.AuthorRecord import AuthorRecord
 
 
 @runtime_checkable
@@ -7,7 +10,10 @@ class Author(Protocol):
 
     Defined as a Protocol (structural typing) instead of an ABC because
     ABCMeta conflicts with the SQLAlchemy model metaclass. Any class that
-    implements get_display_name() satisfies this interface.
+    has an author_record and implements get_display_name() satisfies it.
     """
+
+    # Database identity used by Answer to point to its author.
+    author_record: AuthorRecord
 
     def get_display_name(self) -> str: ...

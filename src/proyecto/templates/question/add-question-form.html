@@ -122,8 +122,8 @@ head %}
           </a>
         </div>
         <div class="control">
-          {{ form.submit(class="button is-link is-rounded px-5", value="Post")
-          }}
+          {{ form.submit(class="button is-primary is-outlined is-rounded px-5",
+          value="Post") }}
         </div>
       </div>
     </form>
@@ -131,6 +131,7 @@ head %}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/overtype@2.3.4/dist/overtype.min.js"></script>
+<script src="{{ url_for('static', filename='js/overtype-theme.js') }}"></script>
 <script>
   const titleInput = document.getElementById("title-input");
   const titleCount = document.getElementById("title-count");
@@ -145,7 +146,7 @@ head %}
     value: {{ (form.body.data or "") | tojson }},
     placeholder: "Body (Markdown supported)",
     toolbar: true,
-    theme: "cave",
+    theme: BULMA_OVERTYPE_THEME,
     textareaProps: { name: "{{ form.body.name }}" },
   });
 

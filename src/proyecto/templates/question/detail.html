@@ -1,6 +1,23 @@
-{% extends "base.html" %} {% from "question/_question_meta.html" import
-question_meta, question_tags, question_actions %} {% block title %}{{
-question.title }}{% endblock %} {% block content %}
+{% extends "base.html" %} {% from "question/_question.html" import
+question_post %} {% block title %}{{ question.title }}{% endblock %} {% block head %}
+<style>
+  /* Make the editor look like a Bulma input (same as the question form). */
+  #answer-editor {
+    height: 250px; /* fixed height: OverType fills the container */
+    border: 1px solid var(--bulma-border, #dbdbdb);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  /* Replies hang under their answer with a left line. */
+  .reply {
+    border-left: 2px solid var(--bulma-border, #dbdbdb);
+  }
+  #answer-editor.is-danger {
+    border-color: var(--bulma-danger, #f14668);
+  }
+</style>
+{% endblock %}
+{% block content %}
 <a class="is-inline-block mb-4" href="{{ url_for('question.questions') }}">
   <span class="icon-text">
     <span class="icon"><i class="fa-solid fa-arrow-left"></i></span>
@@ -8,23 +25,105 @@ question.title }}{% endblock %} {% block content %}
   </span>
 </a>
 
-<div class="p-5">
-  {{ question_meta(question) }}
+{{ question_post(question, detail=True) }}
 
-  <h1 class="title is-3 mb-4">{{ question.title }}</h1>
-
-  {{ question_tags(question) }}
-
-  <div class="content mb-4">
-    <md-block>{{ question.body }}</md-block>
+<h2 class="title is-4 mt-6 mb-4">Answers ({{ question.answers | length }})</h2>
+{% for answer in question.answers %}
+<div class="box">
+  <p class="help mt-0 mb-3">
+    <i class="fa-regular fa-user"></i>
+    <span>{{ answer.author.get_display_name() }}</span>
+    • {{ answer.published_at.strftime("%Y-%m-%d %H:%M") }}
+  </p>
+  <div class="content">
+    <md-block>{{ answer.body }}</md-block>
   </div>
 
-  {{ question_actions(question) }}
-</div>
+  {# Replies: one level only, a reply cannot be replied to. #}
+  {% for reply in answer.replies %}
+  <div class="reply ml-5 pl-4 py-2">
+    <p class="help mt-0 mb-1">
+      <i class="fa-regular fa-user"></i>
+      <span>{{ reply.author.get_display_name() }}</span>
+      • {{ reply.published_at.strftime("%Y-%m-%d %H:%M") }}
+    </p>
+    <div class="content is-small">
+      <md-block>{{ reply.body }}</md-block>
+    </div>
+  </div>
+  {% endfor %}
 
-{# Answers are added by issue #8 (Answer model); this section lists them. #}
-<h2 class="title is-4 mt-6 mb-4">Answers</h2>
+  {% if g.user %}
+  {% set has_errors = reply_answer_id == answer.id %}
+  <details class="ml-5 mt-3" {{ "open" if has_errors else "" }}>
+    <summary class="is-size-7 has-text-link is-clickable">Reply</summary>
+    <form
+      class="mt-2"
+      method="post"
+      action="{{ url_for('question.reply_to_answer', answer_id=answer.id) }}"
+    >
+      {{ reply_form.hidden_tag() }}
+      <div class="field">
+        <div class="control">
+          <textarea
+            class="textarea is-small{{ ' is-danger' if has_errors else '' }}"
+            name="{{ reply_form.body.name }}"
+            rows="2"
+            placeholder="Write a reply"
+          >{{ reply_form.body.data or "" if has_errors else "" }}</textarea>
+        </div>
+        {% if has_errors %} {% for error in reply_form.body.errors %}
+        <p class="help is-danger">{{ error }}</p>
+        {% endfor %} {% endif %}
+      </div>
+      {{ reply_form.submit(class="button is-link is-small is-rounded") }}
+    </form>
+  </details>
+  {% endif %}
+</div>
+{% else %}
 <div class="box">
   <p class="has-text-grey has-text-centered">No answers yet.</p>
 </div>
+{% endfor %}
+
+<h2 class="title is-5 mt-6 mb-3">Your answer</h2>
+{% if g.user %}
+<form
+  method="post"
+  action="{{ url_for('question.answer_question', question_id=question.id) }}"
+>
+  {{ answer_form.hidden_tag() }}
+  <!-- OverType creates its own <textarea name="body"> -->
+  <div class="field">
+    <div class="control">
+      <div
+        id="answer-editor"
+        class="{{ 'is-danger' if answer_form.body.errors else '' }}"
+      ></div>
+    </div>
+    {% for error in answer_form.body.errors %}
+    <p class="help is-danger">{{ error }}</p>
+    {% endfor %}
+  </div>
+  {{ answer_form.submit(class="button is-primary is-outlined is-rounded px-5") }}
+</form>
+
+<script src="https://cdn.jsdelivr.net/npm/overtype@2.3.4/dist/overtype.min.js"></script>
+<script src="{{ url_for('static', filename='js/overtype-theme.js') }}"></script>
+<script>
+  // Same Markdown editor as the "create question" form.
+  new OverType("#answer-editor", {
+    value: {{ (answer_form.body.data or "") | tojson }},
+    placeholder: "Write your answer (Markdown supported)",
+    toolbar: true,
+    theme: BULMA_OVERTYPE_THEME,
+    textareaProps: { name: "{{ answer_form.body.name }}" },
+  });
+</script>
+{% else %}
+<p>
+  <a href="{{ url_for('user.login') }}">Log in to answer</a> this question.
+</p>
+{% endif %}
 {% endblock %}

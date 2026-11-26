@@ -1,13 +1,17 @@
-from flask import Blueprint, redirect, render_template, request, session, url_for
+from flask import Blueprint, g, redirect, render_template, request, session, url_for
 from sqlalchemy import select
 
 from proyecto.extensions import db
+from proyecto.models.Answer import Answer
 from proyecto.models.Category import Category
+from proyecto.models.HumanAuthorFactory import HumanAuthorFactory
 from proyecto.models.Question import Question
 from proyecto.models.Tag import Tag
 from proyecto.routes.user import login_required
+from proyecto.utils.answer_forms import AnswerForm
 from proyecto.utils.index_forms import LogOutForm
 from proyecto.utils.question_forms import AddQuestionForm
+from proyecto.utils.reply_forms import ReplyForm
 
 bp = Blueprint("question", __name__, template_folder="templates")
 
@@ -108,5 +112,57 @@ def question_detail(question_id):
     return render_template(
         "question/detail.html",
         question=question,
+        answer_form=AnswerForm(),
+        reply_form=ReplyForm(),
         logout_form=LogOutForm(),
+    )
+
+
+@bp.route("/questions/<int:question_id>/answers", methods=["POST"])
+@login_required
+def answer_question(question_id):
+    question = db.get_or_404(Question, question_id)
+    form = AnswerForm()
+
+    if form.validate_on_submit():
+        # The logged-in user is the author of a human answer.
+        question.add_answer(form.body.data.strip(), HumanAuthorFactory(g.user))
+        db.session.commit()
+        return redirect(url_for("question.question_detail", question_id=question.id))
+
+    return (
+        render_template(
+            "question/detail.html",
+            question=question,
+            answer_form=form,
+            reply_form=ReplyForm(),
+            logout_form=LogOutForm(),
+        ),
+        400,
+    )
+
+
+@bp.route("/answers/<int:answer_id>/replies", methods=["POST"])
+@login_required
+def reply_to_answer(answer_id):
+    answer = db.get_or_404(Answer, answer_id)
+    question = answer.question
+    form = ReplyForm()
+
+    if form.validate_on_submit():
+        answer.add_reply(form.body.data.strip(), HumanAuthorFactory(g.user))
+        db.session.commit()
+        return redirect(url_for("question.question_detail", question_id=question.id))
+
+    return (
+        render_template(
+            "question/detail.html",
+            question=question,
+            answer_form=AnswerForm(),
+            reply_form=form,
+            # Tells the template which answer's reply form has the errors.
+            reply_answer_id=answer.id,
+            logout_form=LogOutForm(),
+        ),
+        400,
     )
