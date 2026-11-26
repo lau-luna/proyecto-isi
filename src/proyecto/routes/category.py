@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template
-from sqlalchemy import select
+from sqlalchemy import distinct, func, select
 
 from proyecto.extensions import db
+from proyecto.models.Answer import Answer
 from proyecto.models.Category import Category
 from proyecto.models.Question import Question
 from proyecto.utils.index_forms import LogOutForm
@@ -13,11 +14,20 @@ bp = Blueprint("category", __name__, template_folder="templates")
 def categories():
     logout_form = LogOutForm()
 
-    # TODO: Add question and answer counts per category when answers are implemented.
-    categories = db.session.scalars(select(Category).order_by(Category.name)).all()
+    rows = db.session.execute(
+        select(
+            Category,
+            func.count(distinct(Question.id)),
+            func.count(Answer.id),
+        )
+        .outerjoin(Question, Question.category_id == Category.id)
+        .outerjoin(Answer, Answer.question_id == Question.id)
+        .group_by(Category.id)
+        .order_by(Category.name)
+    ).all()
 
     return render_template(
-        "category/categories.html", categories=categories, logout_form=logout_form
+        "category/categories.html", rows=rows, logout_form=logout_form
     )
 
 
