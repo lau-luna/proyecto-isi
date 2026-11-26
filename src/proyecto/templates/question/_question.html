@@ -1,3 +1,4 @@
+{% from "vote/_vote_buttons.html" import vote_buttons %}
 {# Pregunta completa. detail=False: card de listado (título linkeado).
 detail=True: página de detalle (título plano, sin hover de card). #} {% macro
 question_post(question, detail=False) %}
@@ -55,24 +56,7 @@ question_post(question, detail=False) %}
   </div>
 
   <div class="buttons mt-4 mb-0">
-    <button class="button is-rounded">
-      <span class="icon-text">
-        <span class="icon">
-          <i class="fa-solid fa-arrow-up-long"></i>
-        </span>
-        {# TODO: get number of upvotes #}
-        <span>#n</span>
-      </span>
-    </button>
-    <button class="button is-rounded">
-      <span class="icon-text">
-        <span class="icon">
-          <i class="fa-solid fa-arrow-down-long"></i>
-        </span>
-        {# TODO: get number of downvotes #}
-        <span>#n</span>
-      </span>
-    </button>
+    {{ vote_buttons(question) }}
     <button class="button is-rounded">
       <span class="icon-text">
         <span class="icon">

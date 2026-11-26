@@ -1,0 +1,33 @@
+{# Up/down vote buttons with the post score in the middle.
+Pressing the same button again removes the vote; pressing the other one
+changes it. The current user's vote is highlighted. #}
+{% macro vote_buttons(post) %}
+{% set my_vote = post.vote_of(g.user) %}
+<div class="vote-buttons is-flex is-align-items-center mr-2">
+  <form method="post" action="{{ url_for('vote.upvote', post_id=post.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <input type="hidden" name="next" value="{{ request.full_path }}" />
+    <button
+      type="submit"
+      class="button is-rounded is-small{{ ' is-primary' if my_vote == 1 else '' }}"
+      aria-label="Upvote"
+      title="Upvote"
+    >
+      <span class="icon"><i class="fa-solid fa-arrow-up-long"></i></span>
+    </button>
+  </form>
+  <strong class="mx-2" data-score-for="{{ post.id }}">{{ post.score }}</strong>
+  <form method="post" action="{{ url_for('vote.downvote', post_id=post.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <input type="hidden" name="next" value="{{ request.full_path }}" />
+    <button
+      type="submit"
+      class="button is-rounded is-small{{ ' is-danger' if my_vote == -1 else '' }}"
+      aria-label="Downvote"
+      title="Downvote"
+    >
+      <span class="icon"><i class="fa-solid fa-arrow-down-long"></i></span>
+    </button>
+  </form>
+</div>
+{% endmacro %}

@@ -16,3 +16,4 @@ from proyecto.models import RegularUser as RegularUser
 from proyecto.models import Reply as Reply
 from proyecto.models import Tag as Tag
 from proyecto.models import User as User
+from proyecto.models import Vote as Vote

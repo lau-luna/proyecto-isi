@@ -14,6 +14,7 @@ from proyecto.routes.index import bp as index_bp
 from proyecto.routes.question import bp as question_bp
 from proyecto.routes.tag import bp as tag_bp
 from proyecto.routes.user import bp as user_bp
+from proyecto.routes.vote import bp as vote_bp
 from proyecto.seeds import seed_categories
 
 from . import models  # noqa: F401  (registra los modelos en db.metadata)
@@ -63,6 +64,7 @@ def create_app(environment="development"):
     app.register_blueprint(category_bp)
     app.register_blueprint(tag_bp)
     app.register_blueprint(question_bp)
+    app.register_blueprint(vote_bp)
 
     app.register_blueprint(index_bp)
 
