@@ -17,7 +17,6 @@ def tags():
     logout_form = LogOutForm()
     answer = aliased(Answer, flat=True)
 
-    tags = db.session.scalars(select(Tag).order_by(Tag.name)).all()
     rows = db.session.execute(
         select(
             Tag,
