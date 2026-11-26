@@ -77,13 +77,14 @@ question.title }}{% endblock %} {% block head %}
 </form>
 
 <script src="https://cdn.jsdelivr.net/npm/overtype@2.3.4/dist/overtype.min.js"></script>
+<script src="{{ url_for('static', filename='js/overtype-theme.js') }}"></script>
 <script>
   // Same Markdown editor as the "create question" form.
   new OverType("#answer-editor", {
     value: {{ (answer_form.body.data or "") | tojson }},
     placeholder: "Write your answer (Markdown supported)",
     toolbar: true,
-    theme: "cave",
+    theme: BULMA_OVERTYPE_THEME,
     textareaProps: { name: "{{ answer_form.body.name }}" },
   });
 </script>
