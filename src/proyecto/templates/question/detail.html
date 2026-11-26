@@ -32,7 +32,7 @@ question_post %} {% block title %}{{ question.title }}{% endblock %} {% block he
 {{ question_post(question, detail=True) }}
 
 <h2 class="title is-4 mt-6 mb-4">Answers ({{ question.answers | length }})</h2>
-{% for answer in question.answers %}
+{% for answer in question.answers_by_score %}
 <div class="box{{ ' accepted-answer' if answer.accepted else '' }}">
   <div class="is-flex is-justify-content-space-between is-align-items-start">
     <p class="help mt-0 mb-3">

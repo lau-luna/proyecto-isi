@@ -2,6 +2,7 @@ import pytest
 from test_answer import create_question
 from test_auth import create_test_user
 
+from proyecto.models.HumanAuthorFactory import HumanAuthorFactory
 from proyecto.models.Question import Question
 from proyecto.models.Tag import Tag
 
@@ -105,3 +106,33 @@ def test_order_changes_after_voting(client, ranked, session):
     assert_in_order(
         client.get("/questions").data, "Newest question", "Popular question"
     )
+
+
+def test_answers_are_ordered_by_score_on_the_detail(client, session):
+    asker = create_test_user(session)
+    juan = create_test_user(session, username="juan", email="juan@example.com")
+    question = create_question(session, asker)
+    factory = HumanAuthorFactory(asker)
+    first = question.add_answer("First answer", factory)
+    second = question.add_answer("Second answer", factory)
+    third = question.add_answer("Third answer", factory)
+    question.add_answer("Fourth answer", factory)
+    session.commit()
+    third.upvote(asker)
+    third.upvote(juan)
+    first.downvote(juan)
+    session.commit()
+
+    response = client.get(f"/questions/{question.id}")
+
+    # Most voted first; answers with the same score keep their age order.
+    assert_in_order(
+        response.data, "Third answer", "Second answer", "Fourth answer", "First answer"
+    )
+    assert [a.body for a in question.answers_by_score] == [
+        "Third answer",
+        "Second answer",
+        "Fourth answer",
+        "First answer",
+    ]
+    assert second.score == 0

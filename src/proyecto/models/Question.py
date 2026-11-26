@@ -45,6 +45,15 @@ class Question(Post):
         self.user_id = user_id
         self.tags = tags
 
+    @property
+    def answers_by_score(self) -> list[Answer]:
+        """Answers with the most voted first.
+
+        sorted() is stable and answers are loaded oldest first, so answers
+        with the same score keep their age order.
+        """
+        return sorted(self.answers, key=lambda answer: answer.score, reverse=True)
+
     def add_answer(self, body: str, factory: AuthorFactory) -> Answer:
         """Create an answer whose author is chosen by the given factory.
 
