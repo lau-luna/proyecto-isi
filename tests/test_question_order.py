@@ -51,7 +51,7 @@ def assert_in_order(html, *titles):
 ORDER_BY_SCORE = ("Popular question", "Newest question", "Disliked question")
 
 
-@pytest.mark.parametrize("url", ["/", "/questions", "/questions?q=question"])
+@pytest.mark.parametrize("url", ["/questions", "/questions?q=question"])
 def test_lists_are_ordered_by_score(client, ranked, url):
     assert_in_order(client.get(url).data, *ORDER_BY_SCORE)
 
@@ -136,3 +136,12 @@ def test_answers_are_ordered_by_score_on_the_detail(client, session):
         "First answer",
     ]
     assert second.score == 0
+
+
+def test_index_is_ordered_by_newest(client, ranked):
+    assert_in_order(
+        client.get("/").data,
+        "Newest question",
+        "Disliked question",
+        "Popular question",
+    )
